@@ -16,6 +16,7 @@ using B_Visual = Brick.Visual;
 using B_TwoBodyTire = Brick.AGXBrick.TwoBodyTire;
 using B_Joint = Brick.Robotics.Joint;
 using B_Camera = Brick.Scene.Camera;
+using B_URDF = Brick.AGXBrick.UrdfModel;
 using System.Linq;
 using AGXUnityEditor.IO;
 
@@ -165,6 +166,9 @@ namespace AGXUnityEditor.BrickUnity
           break;
         case B_Camera b_camera:
           HandleCamera(go, b_camera);
+          break;
+        case B_URDF b_urdf:
+          HandleUrdf(ref go, b_urdf);
           break;
         case B_Component b_component:
           HandleComponent(ref go, ref go_external, b_component);
@@ -435,6 +439,11 @@ namespace AGXUnityEditor.BrickUnity
       return camera;
     }
 
+    private void HandleUrdf(ref GameObject go, B_URDF b_urdf) {
+
+    }
+    
+
 
     // Handle a Brick Component. This only does something if the component has an external file path. In that case,
     // read the external file and assign the corresponding GameObject to go_external so that it can be referenced by
@@ -476,6 +485,9 @@ namespace AGXUnityEditor.BrickUnity
         var agxPrefab = AGXFileImporter.Import(dataFilepath);
         go = Object.Instantiate(agxPrefab);
         go.name = oldName + " (external)";
+      }
+      else if (ext == ".urdf") {
+        // Do nothing
       }
       else
       {
