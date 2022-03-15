@@ -110,6 +110,7 @@ namespace AGXUnity.BrickUnity
           continue;
         var nativeConstraint = au_constraint.GetInitialized<AGXUnity.Constraint>().Native;
         this.m_brickSimulation.InteractionMap.Add(b_connector.MainInteraction, nativeConstraint);
+        m_brickSimulation.ConnectorMap.Add(b_connector, nativeConstraint);
         foreach (var b_interaction in b_connector.Interactions)
         {
           if (b_interaction is B_Interaction.Interaction1D b_interaction1D)
