@@ -1,0 +1,7 @@
+.format: 4
+
+GearBoxInput:
+  .extends: Signal.Input<Int>
+  .doc: Sets the gear of the gear box
+  gearBox:
+    .type: Physics.DriveTrain.GearBoxConnector

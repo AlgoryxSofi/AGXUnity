@@ -1,0 +1,120 @@
+.format: 4
+
+.import: 
+  Physics.Mechanics.HingeConnector: [HingeConnector]
+  Physics.DriveTrain: [GearConnector, RotatingShaft, RotationalActuator, FixedVelocityEngine, TorqueConverterConnector, GearBoxConnector, DifferentialConnector]
+
+Shafts:
+  .extends: Component
+
+  tcOut:
+    .type: RotatingShaft
+    .value: RotatingShaft
+  
+  gearToFrontDiff:
+    .type: RotatingShaft
+    .value: RotatingShaft
+
+  diffToLeftWheel:
+    .type: RotatingShaft
+    .value: RotatingShaft
+
+
+DriveTrainWithTCAndGearBox:
+  .extends: Component
+
+  frontLeftActuator:
+    .type: RotationalActuator
+    .value: RotationalActuator
+
+  frontRightActuator:
+    .type: RotationalActuator
+    .value: RotationalActuator
+
+  shafts:
+    .type: Shafts
+    .value: Shafts
+
+  engine:
+    .type: FixedVelocityEngine
+    .value: FixedVelocityEngine
+    targetRPM: 20
+
+  torqueConverter:
+    .type: TorqueConverterConnector
+    inputAttachment: this.engine.outputAttachment
+    outputAttachment: this.shafts.tcOut.inputAttachment
+
+  gearBox:
+    .type: GearBoxConnector
+    attachment1: this.shafts.tcOut.outputAttachment
+    attachment2: this.shafts.gearToFrontDiff.inputAttachment
+    interaction:
+      gearRatios:
+        - 0
+        - 1
+        - -1
+      gear: 1
+
+  frontDiff:
+    .type: DifferentialConnector
+    inputAttachment: this.shafts.gearToFrontDiff.inputAttachment
+    outputAttachments:
+      - this.frontRightActuator.inputAttachment
+      - this.shafts.diffToLeftWheel.inputAttachment
+
+  # This is needed since the direction of the left hinge is wrong
+  gearLeft:
+    .type: GearConnector
+    attachment1: this.shafts.diffToLeftWheel.outputAttachment
+    attachment2: this.frontLeftActuator.inputAttachment
+    interaction:
+      gearRatio: -1
+
+
+BoxCarGearBox:
+  .extends: Physics.Mechanics.Test.Vehicle.BoxCar.BoxCar
+  wantInternalPositioning: true
+
+  connectRB:
+    .type: HingeConnector
+    attachment1: this.chassis.axleRB
+    attachment2: this.wheels.wheelRB.attachment
+
+  connectRF:
+    .type: HingeConnector
+    attachment1: this.chassis.axleRF
+    attachment2: this.wheels.wheelRF.attachment
+
+  connectLB:
+    .type: HingeConnector
+    attachment1: this.chassis.axleLB
+    attachment2: this.wheels.wheelLB.attachment
+
+  connectLF:
+    .type: HingeConnector
+    attachment1: this.chassis.axleLF
+    attachment2: this.wheels.wheelLF.attachment
+
+  driveTrain:
+    .type: DriveTrainWithTCAndGearBox
+    frontLeftActuator:
+      interaction: this.connectLF.mainInteraction
+    frontRightActuator:
+      interaction: this.connectRF.mainInteraction
+
+
+TestGearBoxCar:
+  .extends: Physics.Component
+  wantInternalPositioning: true
+
+  boxCar:
+    .type: BoxCarGearBox
+    .value: BoxCarGearBox
+
+  plane:
+    .type: Physics.Geometry.Plane
+    a: 0
+    b: 0
+    c: 1
+    d: 1
