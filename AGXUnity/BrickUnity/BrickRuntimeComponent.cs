@@ -207,6 +207,12 @@ namespace AGXUnity.BrickUnity
               comp.signal = doubleInput;
             }
             break;
+          case B_Signal.Input<long> intInput:
+            {
+              var comp = go.AddComponent<BrickIntInput>();
+              comp.signal = intInput;
+            }
+            break;
           default:
             Debug.LogWarning($"Unkown input signal type: {b_input.GetType()}");
             break;
@@ -253,6 +259,12 @@ namespace AGXUnity.BrickUnity
             {
               var comp = go.AddComponent<BrickTransformOutput>();
               comp.signal = transformOutput;
+            }
+            break;
+          case B_Signal.Output<long> intOutput:
+            {
+              var comp = go.AddComponent<BrickIntOutput>();
+              comp.signal = intOutput;
             }
             break;
           case B_Signal.CameraOutput cameraOutput:

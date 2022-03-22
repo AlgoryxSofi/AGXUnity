@@ -1,0 +1,22 @@
+.format: 4
+
+.import:
+  Physics.DriveTrain: [GearAttachment, GearBoxInteraction]
+
+GearBoxConnector:
+  .doc: >
+    Gear box connecor with multiple gears
+  .extends: Physics.Connector
+
+  attachment1:
+    .type: GearAttachment
+    .value: null
+
+  attachment2:
+    .type: GearAttachment
+    .value: null
+
+  interaction:
+    .type: GearBoxInteraction
+    attachment1: this.attachment1
+    attachment2: this.attachment2

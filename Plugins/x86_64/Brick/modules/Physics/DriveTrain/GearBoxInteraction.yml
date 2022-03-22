@@ -1,0 +1,26 @@
+.format: 4
+
+.import:
+  Physics: [Interaction]
+  Physics.DriveTrain: [GearAttachment]
+
+GearBoxInteraction:
+  .doc: >
+    Gear box contains muliple gear ratios to switch between
+  .extends: Interaction
+
+  attachment1:
+    .type: GearAttachment
+
+  attachment2:
+    .type: GearAttachment
+
+  interactionType: GearBox
+
+  gearRatios:
+    .type: List<Real>
+    .value: []
+
+  gear:
+    .type: Int
+    .value: 0
