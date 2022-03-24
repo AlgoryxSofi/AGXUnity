@@ -70,6 +70,11 @@ namespace AGXUnity.BrickUnity
       au_sim.StepCallbacks.PreStepForward += m_brickSimulation.SyncInputParameters;
       au_sim.StepCallbacks.PostStepForward += m_brickSimulation.SyncOutputParameters;
 
+      // TODO: Temporary fix to make sure the external component parameters from AGX are
+      // transfered to the Brick object
+      var b_tempSim = new B_BrickSimulation();
+      b_tempSim.AddComponent(m_component);
+
       HandleRigidBodies();
       HandleConstraints();
       AddSignals();
@@ -78,6 +83,10 @@ namespace AGXUnity.BrickUnity
       if (Application.isEditor)
         HandleSignals();
       m_brickSimulation.ConnectToROS();
+
+      // Just to be on the safe side
+      b_tempSim.ClearAgxSimulation();
+
       return base.Initialize();
     }
 
