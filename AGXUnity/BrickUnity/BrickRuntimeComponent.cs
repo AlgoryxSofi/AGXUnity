@@ -9,7 +9,7 @@ using B_Connector = Brick.Physics.Mechanics.AttachmentPairConnector;
 using B_Signal = Brick.Signal;
 using B_BrickSimulation = Brick.AGXBrick.BrickSimulation;
 using B_Interaction = Brick.Physics.Mechanics.AttachmentPairInteraction;
-using B_Agent = Brick.MachineLearning.RLAgent;
+using B_Agent = Brick.MachineLearning.ReinforcementLearning.AgentSettings;
 
 namespace AGXUnity.BrickUnity
 {
