@@ -307,7 +307,7 @@ mkdir %BUILD_PATH% || goto :error
 
 REM Copy BrickDir folder to build path
 robocopy Assets\AGXUnity\Plugins\x86_64\Brick\modules %BUILD_PATH%/%BUILD_NAME%_Data\Brick\modules /MIR
-robocopy BrickModels %BUILD_PATH%BrickModels /MIR
+robocopy BrickModels %BUILD_PATH%\BrickModels /MIR
 
 if NOT "%BUILD_TARGET%" == "StandaloneWindows64" (
   goto :exit
