@@ -7,6 +7,7 @@
 .import:
   Physics.Mechanics: [RigidBody, HingeAttachment, HingeConnector, PrismaticAttachment]
   Physics.Mechanics.AttachmentPairInteraction: [RotationalMotorInteraction1D, TranslationalMotorInteraction1D]
+  MachineLearning.ReinforcementLearning: [AgentSettings, Action, Observation]
 
 # We will create two, rigid bodies, one box and one cylinder, to set up the classical cartpole-example
 # The goal should be to learn to balance the pole by moving the cart it is connected to
@@ -116,14 +117,14 @@ Cartpole:
   # The max and min value are used in the normalization, meaning -20 will be 0 and 20 will
   # be 1, when angle value is normalized.
   angleObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: poleAngleSignal
     normalize: true
     maxValue: 20
     minValue: -20
 
   positionObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: cartPositionSignal
     normalize: true
     maxValue: 0.5
@@ -132,15 +133,15 @@ Cartpole:
   # We also need to set up a signal to be able to set an action. The action will be the 
   # velocity of the cart, limited by a max and min value.
   velAction:
-    .type: MachineLearning.RLAgent.ContinuousAction
+    .type: Action.ContinuousAction
     signal: cartMotorVelSignal
     maxValue: 2
     minValue: -2
 
-  # Lastly we can set up the RLAgent. maxSteps decides how long the maximum length of the 
+  # Lastly we can set up the AgentSettings. maxSteps decides how long the maximum length of the 
   # episode should be.
   agent:
-    .type: MachineLearning.RLAgent
+    .type: MAgentSettings
     observations:
       - poleAngleSignal
       - cartPositionSignal

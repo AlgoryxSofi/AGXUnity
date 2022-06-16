@@ -1,0 +1,12 @@
+.format: 4
+
+ContactDistanceOutput:
+  .extends: Signal.ContactDepthOutput
+  .doc: Outputs the distance between the deepest contact point of the geometry
+    and a local position. If not in contact, maxReach will be returned.
+  
+  localParentPosition:
+    .type: Vec3
+
+  maxReach:
+    .type: Real

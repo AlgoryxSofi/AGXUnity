@@ -4,7 +4,7 @@ using UnityEngine;
 using AGXUnity.BrickUnity;
 
 using B_Signal = Brick.Signal;
-using B_Agent = Brick.MachineLearning.RLAgent;
+using B_Agent = Brick.MachineLearning.ReinforcementLearning.AgentSettings;
 
 public static class BrickRLAgentUtils
 {

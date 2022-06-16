@@ -18,6 +18,20 @@ Sensor:
     .type: String
     .value: null
 
+RotatingBodyVelocitySensor:
+  .extends: Sensor
+  rotatingBody:
+    .type: Physics.DriveTrain.RotatingBody1D
+
+RotatingBodyAngleSensor:
+  .extends: Sensor
+  rotatingBody:
+    .type: Physics.DriveTrain.RotatingBody1D
+
+FixedVelocityEngineTorqueSensor:
+  .extends: Sensor
+  engine:
+    .type: Physics.DriveTrain.FixedVelocityEngine 
 
 JointSensor:
   .extends: Sensor

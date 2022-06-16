@@ -2,6 +2,6 @@
 
 GearBoxInput:
   .extends: Signal.Input<Int>
-  .doc: Sets the gear of the gear box
+  .doc: Sets the gear number to be used by the gear box
   gearBox:
     .type: Physics.DriveTrain.GearBoxConnector

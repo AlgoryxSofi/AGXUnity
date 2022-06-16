@@ -1,0 +1,7 @@
+.format: 4
+
+FixedVelocityEngineTorqueOutput:
+  .extends: Signal.ForceScalarOutput
+  .doc: Output the scalar (signed) torque, in Nm, of a FixedVelocityEngine.
+  engine:
+    .type: Physics.DriveTrain.FixedVelocityEngine

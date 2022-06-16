@@ -1,0 +1,10 @@
+.format: 4
+
+.import:
+  Physics.DriveTrain: [RotatingBody1D]
+
+RotatingBodyAngleOutput:
+  .extends: Signal.PositionScalarOutput
+  .doc: Gets the current angle, in radians, of a rotating body in a drivetrain.
+  rotatingBody:
+    .type: RotatingBody1D

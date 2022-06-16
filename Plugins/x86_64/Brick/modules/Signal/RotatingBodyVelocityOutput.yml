@@ -1,0 +1,7 @@
+.format: 4
+
+RotatingBodyVelocityOutput:
+  .extends: Signal.VelocityScalarOutput
+  .doc: Output the (signed) speed, in rad/s, of a FixedVelocityEngine.
+  rotatingBody:
+    .type: Physics.DriveTrain.RotatingBody1D

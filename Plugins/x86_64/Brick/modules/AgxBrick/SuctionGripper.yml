@@ -1,0 +1,113 @@
+.format: 4
+
+VacuumSystem:
+  .doc: > 
+    A vacuum system with a default desired vacuum.
+    The vacuum level will be reached for each suction cup which
+    has no leakage.
+  .extends: Physics.Component
+
+  enablePump:
+    .type: Bool
+    .value: true
+
+  desiredVacuum:
+    .type: Real
+    .value: 0.1
+
+  pumpInputSignal:
+    .type: Signal.ComponentBoolInput
+    component: this
+    pathToBool: this.enablePump
+
+  pumpOutputSignal:
+    .type: Signal.ComponentBoolOutput
+    component: this
+    pathToBool: this.enablePump
+
+
+Cup:
+  .doc: > 
+    The suction cup include sensors for detecting objects which will
+    be attracted with a suction force. The magnitude of the force depend
+    on the vacuum system, if the suction cup lip is sealed and the distance to the 
+    object. See AGX documentation for details.
+    If a path to a Physics.Geometry.Trimesh is specified for the
+    deformingGeometryPath, that specific trimesh will deform visually.
+    The trimesh will assume a shape that fits between the origin of the suction cup
+    body and the attachment to the non-cup body of the connector attribute of the cup, 
+    according to the initial state.
+    Example: If the cup body is positioned 3cm below the attachemnt of a another body by a connector
+    no mather the initial size of the trimesh, it will be squeezed/stretched to fit there. 
+    The direction of the stretching is defined by the localMeshDirection attribute.
+    
+  .extends: Physics.Component
+  wantInternalPositioning: true
+  sealResolution:
+    .doc: Number of sensors positioned around the lip, for estimating the leakage area.
+    .type: Int
+    .value: 0
+
+  sealSensorReach:
+    .doc: Radius of the spherical seal sensors
+    .type: Real
+    .value: 0.01
+
+  lipRadius:
+    .doc: Radius for calculating the flow into the suction cup, and positioning the seal sensors.
+    .type: Real
+
+  lipHeight:
+    .doc: Height for collision primitive (cylinder) generated if the body attribute is not set.
+    .type: Real
+    .value: 0.01
+
+  mountingRadius:
+    .doc: > 
+      Radius for calculating the flow from the suction cup into the vacuum system.
+      Defaults to half of the lip radius
+    .type: Real
+    .value: this.lipRadius * 0.5
+
+  localLineSensorVector:
+    .doc: Vector for defining a line sensor, which also define the direction for calculated suction cup forces.
+    .type: Vec3
+    .value: Vec3(0,0,-0.1)
+
+  localMeshDirection:
+    .doc: Direction for aligning the mesh with the cup normal
+    .type: Vec3
+    .value: Vec3(0,0,1)
+
+  deformingGeometryPath:
+    .type: Path
+    .value: null
+    
+  body:
+    .doc: The rigid body defining the deformable suction cup.
+    .type: Physics.Mechanics.RigidBody
+
+  connector:
+    .doc: > 
+      A Connector used for attaching the Cup to something.
+      Optional, but the trimesh geometry will not be deformed 
+      unless this is set and one of the attachments is
+      relative the body of the suction cup.
+    .type: Physics.Mechanics.AttachmentPairConnector
+    .value: null
+
+SuctionGripper:
+  .doc: > 
+    A gripper tool with one or more suction cups connected to one vacuum system.
+    All local SuctionGripper.Cup attributes will be connected to the vacuum system.
+    It is up to the author to define Connectors for positioning and constraining the
+    cups to the holder body, or something else.
+  .extends: Robotics.Manipulator
+  wantInternalPositioning: true
+  
+  holder:
+    .type: Physics.Mechanics.RigidBody
+
+  vacuum:
+    .type: VacuumSystem
+    .value: VacuumSystem

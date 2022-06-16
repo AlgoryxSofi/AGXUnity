@@ -1,0 +1,11 @@
+.format: 4
+
+PositionScalarOutput:
+  .extends: Signal.Output<Real>
+  .abstract: true
+  .doc: >
+    Outputs a scalar position or angle.
+    Unless a child class override,
+    the unit is meters for position and radians for angle.
+
+

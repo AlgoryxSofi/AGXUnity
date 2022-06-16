@@ -1,11 +1,12 @@
-# This is a component with an MachineLearning.RLAgent for testing the setup of an RLAgent
-# and test functionality of the RLAgent. Such as setting actions and getting observations etc.
+# This is a component with an MachineLearning.ReinforcementLearning.AgentSettings for testing the setup 
+# of the AgentSettings and test functionality of it. Such as setting actions and getting observations etc.
 
 .format: 4
 
 .import:
   Physics.Mechanics: [RigidBody, HingeAttachment, HingeConnector, PrismaticAttachment]
   Physics.Mechanics.AttachmentPairInteraction: [RotationalMotorInteraction1D, TranslationalMotorInteraction1D]
+  MachineLearning.ReinforcementLearning: [AgentSettings, Action, Observation]
 
 Box:
   .extends: RigidBody
@@ -96,19 +97,19 @@ Cartpole:
     node: this.pole
 
   floatObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalFloat
   
   vec3Observation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalVec3
 
   quatObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalQuat
 
   transformObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalTransform
 
   # Create input signal for action
@@ -122,21 +123,21 @@ Cartpole:
 
   # Create a continuous action
   action0:
-    .type: MachineLearning.RLAgent.ContinuousAction
+    .type: Action.ContinuousAction
     signal: forceInputSignal
     maxValue: 2
     minValue: -2
 
   action1:
-    .type: MachineLearning.RLAgent.ContinuousAction
+    .type: Action.ContinuousAction
     signal: velocityInputSignal
     maxValue: 0
     minValue: -2
 
-  # Lastly we can set up the RLAgent. maxSteps decides how long the maximum length of the 
+  # Lastly we can set up the ReinforcementLearning.AgentSettings. maxSteps decides how long the maximum length of the 
   # episode should be.
   agent:
-    .type: MachineLearning.RLAgent
+    .type: AgentSettings
     observations:
       - floatObservation
       - vec3Observation
@@ -218,19 +219,19 @@ RoboticsCartpole:
     node: this.poleSegment.body
 
   floatObservation:
-    .type: MachineLearning.SensorObservation
+    .type: Observation.SensorObservation
     sensor: this.angleSensor
   
   vec3Observation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalVec3
 
   quatObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalQuat
 
   transformObservation:
-    .type: MachineLearning.RLAgent.Observation
+    .type: Observation
     signal: signalTransform
 
   # Create input signal for action
@@ -240,21 +241,21 @@ RoboticsCartpole:
 
   # Create a continuous action
   action0:
-    .type: MachineLearning.RLAgent.ContinuousAction
+    .type: Action.ContinuousAction
     signal: forceInputSignal
     maxValue: 2
     minValue: -2
 
   action1:
-    .type: MachineLearning.JointAction
+    .type: Action.JointAction
     joint: this.joint
     maxValue: 0
     minValue: -2
 
-  # Lastly we can set up the RLAgent. maxSteps decides how long the maximum length of the 
+  # Lastly we can set up the AgentSettings. maxSteps decides how long the maximum length of the 
   # episode should be.
   agent:
-    .type: MachineLearning.RLAgent
+    .type: AgentSettings
     observations:
       - floatObservation
       - vec3Observation

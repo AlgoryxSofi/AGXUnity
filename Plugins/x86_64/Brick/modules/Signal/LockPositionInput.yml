@@ -6,6 +6,6 @@
 LockPositionInput:
   .extends: Signal.Input<Real>
   .doc: Sets the (signed) input position of a lock (angle if rotational lock)
-    Units are [m] for linear actuators, and [degrees] for rotational.
+    Units are meters for linear actuators, and degrees for rotational.
   lock:
     .type: LockInteraction1D

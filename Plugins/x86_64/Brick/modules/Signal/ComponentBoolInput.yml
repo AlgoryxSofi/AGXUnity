@@ -1,0 +1,18 @@
+.format: 4
+
+ComponentBoolInput:
+  .extends: Signal.Input<Bool>
+  .doc: >
+    Set bool attribute of component true or false.
+    The pathToBool has to correctly have the local path to the attribute.
+
+
+  component:
+    .doc: > 
+      A component where one there is a declared Bool at some local path.
+      The bool can be set by this input signal.
+    .type: Physics.Component
+
+  pathToBool:
+    .doc: Must point to in model Bool attribute.
+    .type: Path

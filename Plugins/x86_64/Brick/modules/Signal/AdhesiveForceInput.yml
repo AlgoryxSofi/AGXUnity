@@ -5,6 +5,6 @@
 
 AdhesiveForceInput:
   .extends: Signal.Input<Real>
-  .doc: Sets the constand adhesive force (always positive) of a contact material
+  .doc: Sets the constant adhesive force (always positive) of a contact material
   contactMaterial:
     .type: ContactMaterial

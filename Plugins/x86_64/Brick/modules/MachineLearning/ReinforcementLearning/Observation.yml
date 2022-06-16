@@ -1,0 +1,30 @@
+.format: 4
+.import:
+  Robotics: [Sensor]
+
+Observation:
+  .doc: A signal that can be used as an observation in a reinforcement learning environment. 
+    Scaling and clamping of the signal values are possible to add, if maxValue and
+    minValue are set.
+  signal:
+    .type: Signal.SignalBase
+  maxValue:
+    .type: Real
+  minValue:
+    .type: Real
+  normalize:
+    .doc: Normalize signal using max and min values, quaternions will not be normalized
+    .type: Bool
+    .value: false
+  clamp:
+    .doc: Clamp signal value using max and min values, quaternions will not be clamped
+    .type: Bool
+    .value: false
+
+SensorObservation:
+  .extends: Observation
+  .doc: Observation for a robtic sensor, with a signal instead included in the sensor.
+  signal: null
+  sensor:
+    .type: Sensor
+  

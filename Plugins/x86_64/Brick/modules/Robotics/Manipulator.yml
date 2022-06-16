@@ -1,0 +1,14 @@
+.format: 4
+.import:
+  Physics: [Component]
+
+Manipulator:
+  .extends: Component
+  wantInternalPositioning: true
+  .doc: >
+    A Component which include Robotics.Sensors and Robotics.Joints.
+    Base class of both RobotArm and Tool.
+    The Manipulator runtime implemetation implements
+    the Joints, and Sensors properties, which allow the user to: 
+     - access all internal Joints
+     - access all internal Sensors

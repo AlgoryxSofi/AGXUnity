@@ -202,7 +202,7 @@ As an alternative to step 3 you can also create and run a batch file in the Unit
 @echo off
 setlocal
 
-set AGXDOTNET_PATH=%~dp0Assets\AGXUnity\Plugins\x86_64\agxDotNet.dll
+set AGXDOTNET_PATH="%~dp0Assets\AGXUnity\Plugins\x86_64\agxDotNet.dll"
 if not exist %AGXDOTNET_PATH% (
     echo WARNING! agxDotNet.dll could not be found. Make sure it exists in %AGXDOTNET_PATH%
     exit /b 1
@@ -221,7 +221,7 @@ if "%AGXBRICK_DIR%"=="" (
 echo Using BRICK_DIR=%BRICK_DIR%
 echo Using AGXBRICK_DIR=%AGXBRICK_DIR%
 set BRICK_DISABLE_GRPC=1
-set BRICK_PUBLISH_DIR=%~dp0Assets\AGXUnity\Plugins\x86_64\Brick
+set BRICK_PUBLISH_DIR="%~dp0Assets\AGXUnity\Plugins\x86_64\Brick"
 set TMP_DIR=brick_tmp_build_dir
 if exist %TMP_DIR% rmdir /s /q %TMP_DIR%
 mkdir %TMP_DIR%
@@ -307,7 +307,7 @@ mkdir %BUILD_PATH% || goto :error
 
 REM Copy BrickDir folder to build path
 robocopy Assets\AGXUnity\Plugins\x86_64\Brick\modules %BUILD_PATH%/%BUILD_NAME%_Data\Brick\modules /MIR
-robocopy BrickModels %BUILD_PATH%BrickModels /MIR
+robocopy BrickModels %BUILD_PATH%\BrickModels /MIR
 
 if NOT "%BUILD_TARGET%" == "StandaloneWindows64" (
   goto :exit
