@@ -28,6 +28,7 @@ Robot:
 
   base:
     .type: RobotBase
+    .value: null
 
   communicationProtocol:
     .type: CommunicationProtocol

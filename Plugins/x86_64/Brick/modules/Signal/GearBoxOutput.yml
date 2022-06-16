@@ -2,6 +2,6 @@
 
 GearBoxOutput:
   .extends: Signal.Output<Int>
-  .doc: Get the current gear number of the gear box
+  .doc: Get the current set gear number of the gear box
   gearBox:
     .type: Physics.DriveTrain.GearBoxConnector

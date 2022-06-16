@@ -1,0 +1,17 @@
+.format: 4
+
+ComponentBoolOutput:
+  .extends: Signal.Output<Bool>
+  .doc: >
+    Get bool attribute of component.
+    The pathToBool has to correctly have the local path to the attribute.
+
+  component:
+    .doc: >
+      A component where one there is a declared Bool at some local path.
+      The bool value can be read by this output signal.
+    .type: Physics.Component
+
+  pathToBool:
+    .doc: Must point to in model Bool.
+    .type: Path

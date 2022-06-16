@@ -1,0 +1,22 @@
+.format: 4
+
+.import:
+  Physics.Geometry: [Cylinder, HollowCylinder, Box, Cone, HollowCone, Trimesh, Convex, Line, Plane, Capsule]
+  Signal: [ComponentBoolInput, ComponentBoolOutput]
+
+ComponentWithBoolSignals:
+  .extends: Physics.Component
+  
+  someBool:
+    .type: Bool
+    .value: true
+
+  boolInput:
+    .type: ComponentBoolInput
+    component: this
+    pathToBool: this.someBool
+
+  boolOutput:
+    .type: ComponentBoolOutput
+    component: this
+    pathToBool: this.someBool

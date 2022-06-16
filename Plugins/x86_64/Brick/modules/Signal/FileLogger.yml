@@ -1,7 +1,7 @@
 .format: 4
 
 FileLogger:
-  .doc: Log raw signals to file
+  .doc: Log raw signals to a file, at the given filepath 
   filepath:
     .type: String
   signal:

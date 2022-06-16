@@ -1,0 +1,27 @@
+.format: 4
+
+AgentSettings:
+  .doc: Settings for an agent in a reinforcement learning environment. Keeps track of all the actions and observations.
+
+  observations:
+    .type: List<MachineLearning.ReinforcementLearning.Observation>
+    .value: []
+
+  actions:
+    .type: List<MachineLearning.ReinforcementLearning.Action>
+    .value: []
+
+  stackedObservations:
+    .doc: Value decides how many previous time steps are included in observations. 1 means only current time step is used.
+    .type: Int
+    .value: 1
+
+  maxSteps:
+    .doc: Maximum steps the agent will take per episode.
+    .type: Int
+    .value: 0
+
+  scaleActions:
+    .doc: Bool whether to scale the recieved actions values before setting signals or not
+    .type: Bool
+    .value: true

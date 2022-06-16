@@ -1,0 +1,121 @@
+.format: 4
+LinkAttachment:
+  .extends: Physics.Mechanics.HingeAttachment
+  distance:
+    .type: Real
+    .value: 0
+  localRotation: Quat.FromTo(Vec3(0,0,1), Vec3(0,1,0))
+  localPosition: Vec3(0,0,this.distance)
+
+
+LinkGeometry:
+  .extends: Physics.Geometry.Box
+  length:
+    .type: Real
+    .value: 1
+  lengths: Vec3(0.1,0.1,this.length)
+
+Link:
+  .extends: Physics.Mechanics.RigidBody
+  shape:
+    .type: LinkGeometry
+    length: 1
+  inputAttachment:
+    .type: LinkAttachment
+    distance: -this.shape.length * 0.6
+
+  outputAttachment:
+    .type: LinkAttachment
+    distance: this.shape.length * 0.6
+
+
+DoublePendulum:
+  .extends: Physics.Component
+  wantInternalPositioning: true
+  link1:
+    .type: Link
+    localTransform:
+      position: Vec3(0,0,0)
+  link2:
+    .type: Link
+    .value: Link
+
+  linkConnector:
+    .type: Physics.Mechanics.HingeConnector
+    attachment1: this.link1.outputAttachment
+    attachment2: this.link2.inputAttachment
+    angle: 0
+    angleConstrainDof: true
+
+DoublePendulumInWorld:
+  .extends: DoublePendulum
+
+  worldAttachment:
+    .type: LinkAttachment
+    .value: LinkAttachment
+
+  worldConnector:
+    .type: Physics.Mechanics.HingeConnector
+    attachment1: this.link1.inputAttachment
+    attachment2: this.worldAttachment
+    angle: -135
+    angleConstrainDof: true
+
+
+MultiPendulum:
+  .extends: Physics.Component
+  wantInternalPositioning: true
+
+  pendulum1:
+    .type: DoublePendulumInWorld
+    .value: DoublePendulumInWorld
+
+  pendulum2:
+    .type: DoublePendulum
+    .value: DoublePendulum
+    
+
+  pendulumConnector:
+    .type: Physics.Mechanics.HingeConnector
+    attachment1: this.pendulum1.link2.outputAttachment
+    attachment2: this.pendulum2.link1.inputAttachment
+    angle: 45
+    angleConstrainDof: true
+    
+DoubleMultiPendulum:
+  .extends: Physics.Component
+  wantInternalPositioning: true
+  internalCollisionsEnabled: false
+
+  p1:
+    .type: MultiPendulum
+    pendulum1:
+      worldAttachment:
+        localTransform:
+          position: Vec3(0,0,0)
+    pendulum2:
+      linkConnector:
+        angleConstrainDof: false
+      link2:
+        outputAttachment:
+          name: EndConnectorAttachment1
+  p2:
+    .type: MultiPendulum
+    pendulum1:
+      worldAttachment:
+        distance: 1
+        localTransform:
+          position: Vec3(0,0,1)
+    pendulum2:
+      linkConnector:
+        angleConstrainDof: false
+      link2:
+        outputAttachment:
+          name: EndConnectorAttachment2
+
+
+  endConnector:
+    .type: Physics.Mechanics.HingeConnector
+    name: endConnector
+    attachment1: this.p1.pendulum2.link2.outputAttachment
+    attachment2: this.p2.pendulum2.link2.outputAttachment

@@ -2,6 +2,7 @@
 
 Axis:
   .kind: Enum
+  .doc: Enum to choose an axis in a coordinate system
   values:
     - X
     - Y
@@ -9,7 +10,7 @@ Axis:
 
 
 SingleAxisPositionOutput:
-  .extends: Signal.Output<Real>
+  .extends: Signal.PositionScalarOutput
   .doc: Outputs the position of a node, along one given axis in the reference node's coordinate system
   node:
     .type: Scene.Node

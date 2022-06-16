@@ -2,6 +2,7 @@
 
 ContactDepthOutput:
   .extends: Signal.Output<Real>
-  .doc: Outputs the maximum depth registred for the geometry for any collision
+  .doc: Outputs the maximum depth registred at the time for anything the geometry
+    collides with. If it does not collide, the value will be 0.
   geometry:
     .type: Physics.Geometry

@@ -1,9 +1,9 @@
 .format: 4
 .import:
-  Physics: [Component]
+  Robotics: [Manipulator]
 
 RobotArm:
-  .extends: Component
+  .extends: Manipulator
   .doc: >
     A linear structure of Segments, connected by Joints.
 

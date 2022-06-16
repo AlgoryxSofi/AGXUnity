@@ -4,8 +4,8 @@
   Physics.Mechanics.AttachmentPairInteraction: [MotorInteraction1D]
 
 MotorAngleOutput:
-  .extends: Signal.Output<Real>
-  .doc: Outputs the current angle or position of a motor. The unit is m for linear motors
-    and rad for rotational motors
+  .extends: Signal.PositionScalarOutput
+  .doc: Outputs the current angle or position of a motor. The unit is meters for linear
+    motors and degrees for rotational motors
   motor:
     .type: MotorInteraction1D

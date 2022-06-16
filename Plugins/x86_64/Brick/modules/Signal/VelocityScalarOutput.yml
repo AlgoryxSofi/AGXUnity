@@ -1,0 +1,11 @@
+.format: 4
+
+VelocityScalarOutput:
+  .extends: Signal.Output<Real>
+  .abstract: true
+  .doc: >
+    Outputs a scalar velocity or angular velocity, 
+    of for example a motor or shaft. 
+    Unless a child class override, the unit is meters/sec for velocity
+    and rad/sec anglar velocity.
+

@@ -4,7 +4,7 @@
   Physics.Mechanics.AttachmentPairInteraction: [MotorInteraction1D]
 
 MotorVelocityOutput:
-  .extends: Signal.Output<Real>
+  .extends: Signal.VelocityScalarOutput
   .doc: Gets the (signed) speed of a motor (angular speed if rotational motor). The unit is
     m/s for linear motors and rad/s for rotational motors.
   motor:

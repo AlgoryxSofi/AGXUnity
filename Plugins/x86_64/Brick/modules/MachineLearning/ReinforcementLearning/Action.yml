@@ -1,0 +1,33 @@
+.format: 4
+.import:
+  Robotics: [Joint]
+
+Action:
+  .doc: Generic action
+  signal:
+    .type: Signal.SignalBase
+
+ContinuousAction:
+  .doc: Action with a continuous value between maxValue and minValue
+  .extends: Action
+  maxValue:
+    .type: Real
+    .value: 1
+  minValue:
+    .type: Real
+    .value: -1
+
+
+DiscreteAction:
+  .doc: Action can only be one of the values listed
+  .extends: Action
+  values:
+    .type: List<Real>
+    .value: []
+
+JointAction:
+  .extends: ContinuousAction
+  .doc: Action connected to a robotic joint instead of a signal. The robotic joint must containt a signal instead.
+  signal: null
+  joint:
+    .type: Joint
