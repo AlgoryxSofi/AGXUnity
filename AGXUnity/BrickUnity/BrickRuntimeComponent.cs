@@ -22,6 +22,7 @@ namespace AGXUnity.BrickUnity
     private B_BrickSimulation m_brickSimulation;
 
     public B_Component Component => m_component;
+    public B_BrickSimulation BrickSimulation => m_brickSimulation;
 
     public B_Agent GetBrickAgent(string agentName)
     {
@@ -76,17 +77,18 @@ namespace AGXUnity.BrickUnity
       b_tempSim.AddComponent(m_component);
 
       HandleRigidBodies();
+      HandleGeometries();
       HandleConstraints();
       AddSignals();
       AddROSConnection();
       AddDriveTrains();
+      AddSuctionCup();
       if (Application.isEditor)
         HandleSignals();
       m_brickSimulation.ConnectToROS();
 
       // Just to be on the safe side
       b_tempSim.ClearAgxSimulation();
-
       return base.Initialize();
     }
 
@@ -103,6 +105,22 @@ namespace AGXUnity.BrickUnity
           continue;
         var agx_body = au_body.GetInitialized<AGXUnity.RigidBody>().Native;
         this.m_brickSimulation.BodyMap.Add(b_body, agx_body);
+      }
+    }
+
+
+    private void HandleGeometries()
+    {
+      foreach (var au_shape in GetComponentsInChildren<AGXUnity.Collide.Shape>())
+      {
+        var c_brickObject = au_shape.GetComponent<BrickObject>();
+        if (c_brickObject == null || !c_brickObject.synchronize)
+          continue;
+        var b_geometry = c_brickObject.GetBrickValue<Brick.Physics.Geometry>(m_component);
+        if (b_geometry == null)
+          continue;
+        var agx_geom = au_shape.GetInitialized<AGXUnity.Collide.Shape>().NativeGeometry;
+        this.m_brickSimulation.GeometryMap.Add(b_geometry, agx_geom);
       }
     }
 
@@ -153,6 +171,25 @@ namespace AGXUnity.BrickUnity
     {
       this.m_brickSimulation.CreateSignals(m_component);
       AddCameraSignals();
+    }
+
+
+    private void AddSuctionCup()
+    {
+      m_brickSimulation.CreateSuctionGrippers(m_component);
+
+      foreach (var suctionGripper in GetComponentsInChildren<SuctionGripper>())
+      {
+        var c_brickObject = suctionGripper.GetComponent<BrickObject>();
+        if (c_brickObject == null || !c_brickObject.synchronize)
+          continue;
+        var b_suctionGripper = c_brickObject.GetBrickValue<Brick.AGXBrick.SuctionGripper>(m_component);
+        if (b_suctionGripper == null)
+          continue;
+
+        var agx_suctionGripper = m_brickSimulation.GetAgxSuctionGripper(b_suctionGripper);
+        suctionGripper.InitSuctionGripper(b_suctionGripper, agx_suctionGripper);
+      }
     }
 
 
@@ -222,6 +259,11 @@ namespace AGXUnity.BrickUnity
               comp.signal = intInput;
             }
             break;
+          case B_Signal.Input<bool> boolInut:
+            {
+              var comp = go.AddComponent<BrickBoolInput>();
+            }
+            break;
           default:
             Debug.LogWarning($"Unkown input signal type: {b_input.GetType()}");
             break;
@@ -287,5 +329,6 @@ namespace AGXUnity.BrickUnity
       }
       return go_outputs;
     }
+
   }
 }

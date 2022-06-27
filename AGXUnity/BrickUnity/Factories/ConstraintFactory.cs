@@ -94,7 +94,8 @@ namespace AGXUnity.BrickUnity.Factories
       // No RotationalLockInteraction1D existing in brick....
       var lockController = constraint.GetController<AU_LockController>(controllerType);
       lockController.SetGeneralControllerValues(b_lock1D, overwriteIfDefault);
-      //lockController.Position = ??
+      /*if (overwriteIfDefault || !b_lock1D._positionIsDefault)
+        lockController.Position = (float)Brick.Math.Utils.ToRad(b_lock1D.Position);*/
     }
 
     /// <summary>
@@ -158,7 +159,7 @@ namespace AGXUnity.BrickUnity.Factories
     /// <param name="constraint">An AGXUnity.Constraint with a friction controller</param>
     /// <param name="b_friction1D">A Brick friction 1D interaction</param>
     /// <param name="overwriteIfDefault">Set to true to overwrite the AGXUnity constraint's values even if the Brick values are default</param>
-    
+
     public static void SetStaticFriction(this AU_Constraint constraint,
                                              B_Interaction.StaticFrictionInteraction1D b_friction1D,
                                              bool overwriteIfDefault)

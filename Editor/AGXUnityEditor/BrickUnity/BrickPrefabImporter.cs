@@ -166,6 +166,9 @@ namespace AGXUnityEditor.BrickUnity
         case B_Camera b_camera:
           HandleCamera(go, b_camera);
           break;
+        case Brick.AGXBrick.SuctionGripper b_gripper:
+          HandleSuctionGripper(go, b_gripper);
+          break;
         case B_Component b_component:
           HandleComponent(ref go, ref go_external, b_component);
           break;
@@ -496,6 +499,12 @@ namespace AGXUnityEditor.BrickUnity
       }
 
       go_external = go;
+    }
+
+
+    private void HandleSuctionGripper(GameObject go, Brick.AGXBrick.SuctionGripper b_gripper)
+    {
+      go.AddComponent<SuctionGripper>();
     }
 
 
