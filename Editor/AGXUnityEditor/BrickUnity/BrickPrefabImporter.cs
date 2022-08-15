@@ -512,16 +512,20 @@ namespace AGXUnityEditor.BrickUnity
     private string FindExistingFolder()
     {
       DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath);
-      var foundDirs = dirInfo.EnumerateDirectories("*" + Name + "_Data" + "*.*", SearchOption.AllDirectories).ToList();
+      var foundDirs = dirInfo.EnumerateDirectories(Name + "_Data", SearchOption.AllDirectories).ToList();
       if (foundDirs.Count >0)
       {
         var path = foundDirs.First().FullName;
         char[] separators = { '\\', '/' };
         var splitPath = path.Split(separators).ToList();
-        int index = splitPath.FindIndex(x => x=="Assets");
+        int startIndex = splitPath.FindIndex(x => x=="Assets") + 1;
         string assetsPath = "Assets";
-        for (int i=index+1; i < splitPath.Count; i++){
+        for (int i=startIndex; i < splitPath.Count-1; i++){
           assetsPath += "/" + splitPath[i];
+        }
+        if (foundDirs.Count > 1)
+        {
+          Debug.LogWarning("Found multiple data directories with same name for " + Name + ". Using path: " + path);
         }
         RootPath = assetsPath;
         return path;
