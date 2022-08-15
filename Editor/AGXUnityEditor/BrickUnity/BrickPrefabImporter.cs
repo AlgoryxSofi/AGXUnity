@@ -524,7 +524,6 @@ namespace AGXUnityEditor.BrickUnity
           assetsPath += "/" + splitPath[i];
         }
         RootPath = assetsPath;
-        Debug.Log(assetsPath);
         return path;
       }
       return null;
