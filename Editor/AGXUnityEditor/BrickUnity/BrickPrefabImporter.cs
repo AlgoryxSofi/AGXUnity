@@ -71,14 +71,15 @@ namespace AGXUnityEditor.BrickUnity
       var b_simulation = new Brick.AGXBrick.BrickSimulation();
       b_simulation.AddComponent(b_component);
 
-      // TODO: if source filepath is within the Assets directory so should we set the rootpath to that.
       RootPath = "Assets";
       Name = b_component._ModelValuePath.Name.Str;
+      // Search subdirectories in Assets to see if the folder already exists somewhere, in another folder.
+      // Will change RootPath name if a folder is found.
+      FindExistingFolder();
       GetOrCreateDataDirectory();
       // TODO: If the DataDirectory already exists. For all asset types load the existing assets into the appropriate dictionary.
       GetSavedAssets(contactMaterials, RestoredAssetsRoot.ContainingType.ContactMaterial);
       GetSavedAssets(frictionModels, RestoredAssetsRoot.ContainingType.FrictionModel);
-
 
       // Creates ShapeMaterials and ContactMaterials
       HandleMaterials(b_component);
@@ -504,6 +505,29 @@ namespace AGXUnityEditor.BrickUnity
       if (!AssetDatabase.IsValidFolder(DataDirectoryPath))
         AssetDatabase.CreateFolder(RootPath, Name + "_Data");
       return new DirectoryInfo(DataDirectoryPath);
+    }
+
+    // Will find if a data folder for the given Brick object already exists and set RootPath to be correct if that
+    // is the case
+    private string FindExistingFolder()
+    {
+      DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath);
+      var foundDirs = dirInfo.EnumerateDirectories("*" + Name + "_Data" + "*.*", SearchOption.AllDirectories).ToList();
+      if (foundDirs.Count >0)
+      {
+        var path = foundDirs.First().FullName;
+        char[] separators = { '\\', '/' };
+        var splitPath = path.Split(separators).ToList();
+        int index = splitPath.FindIndex(x => x=="Assets");
+        string assetsPath = "Assets";
+        for (int i=index+1; i < splitPath.Count; i++){
+          assetsPath += "/" + splitPath[i];
+        }
+        RootPath = assetsPath;
+        Debug.Log(assetsPath);
+        return path;
+      }
+      return null;
     }
 
     private void RefreshAssets()
