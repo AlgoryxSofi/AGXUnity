@@ -71,14 +71,15 @@ namespace AGXUnityEditor.BrickUnity
       var b_simulation = new Brick.AGXBrick.BrickSimulation();
       b_simulation.AddComponent(b_component);
 
-      // TODO: if source filepath is within the Assets directory so should we set the rootpath to that.
       RootPath = "Assets";
       Name = b_component._ModelValuePath.Name.Str;
+      // Search subdirectories in Assets to see if the data directory already exists somewhere.
+      // Will change RootPath name if a directory is found.
+      FindExistingDataDirectory();
       GetOrCreateDataDirectory();
       // TODO: If the DataDirectory already exists. For all asset types load the existing assets into the appropriate dictionary.
       GetSavedAssets(contactMaterials, RestoredAssetsRoot.ContainingType.ContactMaterial);
       GetSavedAssets(frictionModels, RestoredAssetsRoot.ContainingType.FrictionModel);
-
 
       // Creates ShapeMaterials and ContactMaterials
       HandleMaterials(b_component);
@@ -505,6 +506,33 @@ namespace AGXUnityEditor.BrickUnity
       if (!AssetDatabase.IsValidFolder(DataDirectoryPath))
         AssetDatabase.CreateFolder(RootPath, Name + "_Data");
       return new DirectoryInfo(DataDirectoryPath);
+    }
+
+    // Will find if a data directory for the given Brick object already exists and set RootPath to be correct if that
+    // is the case
+    private string FindExistingDataDirectory()
+    {
+      DirectoryInfo dirInfo = new DirectoryInfo(Application.dataPath);
+      var foundDirs = dirInfo.EnumerateDirectories(Name + "_Data", SearchOption.AllDirectories).ToList();
+      if (foundDirs.Count >0)
+      {
+        var path = foundDirs.First().FullName;
+        if (foundDirs.Count > 1)
+        {
+          Debug.LogWarning("Found multiple data directories with same name for " + Name + ". Using path: " + path);
+        }
+
+        char[] separators = { '\\', '/' };
+        var splitPath = path.Split(separators).ToList();
+        int startIndex = splitPath.FindIndex(x => x=="Assets") + 1;
+        string assetsPath = "Assets";
+        for (int i=startIndex; i < splitPath.Count-1; i++){
+          assetsPath += "/" + splitPath[i];
+        }
+        RootPath = assetsPath;
+        return path;
+      }
+      return null;
     }
 
     private void RefreshAssets()
