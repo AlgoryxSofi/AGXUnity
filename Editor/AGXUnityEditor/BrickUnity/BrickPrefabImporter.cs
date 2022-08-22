@@ -364,11 +364,11 @@ namespace AGXUnityEditor.BrickUnity
       if (b_body2 == null)
       {
         c_attachmentPair.ReferenceObject = bodyDict[b_body1 as B_RigidBody].gameObject;
-        c_attachmentPair.ReferenceFrame.LocalPosition = b_attachment2.LocalPosition.ToHandedVector3();
-        c_attachmentPair.ReferenceFrame.LocalRotation = b_attachment2.LocalRotation.ToHandedQuaternion();
+        c_attachmentPair.ReferenceFrame.LocalPosition = b_attachment1.LocalPosition.ToHandedVector3();
+        c_attachmentPair.ReferenceFrame.LocalRotation = b_attachment1.LocalRotation.ToHandedQuaternion();
         c_attachmentPair.ConnectedObject = null;
-        c_attachmentPair.ConnectedFrame.LocalPosition = b_attachment1.LocalPosition.ToHandedVector3();
-        c_attachmentPair.ConnectedFrame.LocalRotation = b_attachment1.LocalRotation.ToHandedQuaternion();
+        c_attachmentPair.ConnectedFrame.LocalPosition = b_attachment2.LocalPosition.ToHandedVector3();
+        c_attachmentPair.ConnectedFrame.LocalRotation = b_attachment2.LocalRotation.ToHandedQuaternion();
       }
       else
       {
