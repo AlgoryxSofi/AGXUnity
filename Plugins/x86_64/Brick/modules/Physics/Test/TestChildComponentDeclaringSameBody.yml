@@ -1,0 +1,110 @@
+.format: 4
+
+.import:
+  Physics: [Component]
+  Physics.Mechanics: [RigidBody, RigidBodyAttachment, HingeConnector]
+
+BodyWithAttachment:
+  .extends: RigidBody
+  attachment:
+    .type: RigidBodyAttachment
+    localTransform:
+      position: Math.Vec3(0,0,1)
+
+ChildComponentWithConnectorAndAttachments:
+  .extends: Component
+  a1:
+    .type: RigidBodyAttachment
+  a2:
+    .type: RigidBodyAttachment
+  connector:
+    .type: HingeConnector
+    attachment1: this.a1
+    attachment2: this.a2
+
+
+ChildComponentWithConnectorAndBodies:
+  .extends: Component
+  body1:
+    .type: BodyWithAttachment
+  body2:
+    .type: BodyWithAttachment
+  connector:
+    .type: HingeConnector
+    attachment1: this.body1.attachment
+    attachment2: this.body2.attachment
+
+ParentComponentWorks:
+  .extends: Component
+  wantInternalPositioning: true
+
+  body1:
+    .type: BodyWithAttachment
+    motionControl: Static
+    # fix the body relative the parent component
+    localTransform:
+      position: Math.Vec3(0,0,0)
+  body2:
+    .type: BodyWithAttachment
+    # Move the local attachment position
+    attachment:
+      localTransform:
+        position: Math.Vec3(0,0,-1)
+
+  # Declare Component after the bodies, and it works
+  # This since the the correct attachments are used,
+  # with good pointers to the correct bodies
+  connectorComponent:
+    .type: ChildComponentWithConnectorAndAttachments
+    a1: this.body1.attachment
+    a2: this.body2.attachment
+
+ParentComponentFailAttachments:
+  .extends: Component
+  wantInternalPositioning: true
+
+  # Declare Component before the bodies, and it fails
+  # This since the attachments are created with Null bodies
+  connectorComponent:
+    .type: ChildComponentWithConnectorAndAttachments
+    a1: this.body1.attachment
+    a2: this.body2.attachment
+
+  body1:
+    .type: BodyWithAttachment
+    motionControl: Static
+    # fix the body relative the parent component
+    localTransform:
+      position: Math.Vec3(0,0,0)
+  body2:
+    .type: BodyWithAttachment
+    # Move the local attachment position
+    attachment:
+      localTransform:
+        position: Math.Vec3(0,0,-1)
+
+ParentComponentFailBodies:
+  .extends: Component
+  wantInternalPositioning: true
+
+  body1:
+    .type: BodyWithAttachment
+    motionControl: Static
+    # fix the body relative the parent component
+    localTransform:
+      position: Math.Vec3(0,0,0)
+
+  body2:
+    .type: BodyWithAttachment
+    # Move the local attachment position
+    attachment:
+      localTransform:
+        position: Math.Vec3(0,0,-1)
+  # Here we instead try using a COmponent
+  # pointing to the bodies instead of the attachments
+  # this fails already when loading the child component, which
+  # complains about bodies not being declared, I think
+  connectorComponent:
+    .type: ChildComponentWithConnectorAndBodies
+    body1: this.body1
+    body2: this.body2

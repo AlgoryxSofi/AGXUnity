@@ -362,22 +362,23 @@ namespace AGXUnityEditor.BrickUnity
       var b_body1 = b_attachment1.Body;
       var b_body2 = b_attachment2.Body;
       var c_attachmentPair = constraint.AttachmentPair;
-      if (b_body1 == null)
-      {
-        c_attachmentPair.ReferenceObject = bodyDict[b_body2 as B_RigidBody].gameObject;
-        c_attachmentPair.ReferenceFrame.LocalPosition = b_attachment2.LocalPosition.ToHandedVector3();
-        c_attachmentPair.ReferenceFrame.LocalRotation = b_attachment2.LocalRotation.ToHandedQuaternion();
-        c_attachmentPair.ConnectedObject = null;
-        c_attachmentPair.ConnectedFrame.LocalPosition = b_attachment1.LocalPosition.ToHandedVector3();
-        c_attachmentPair.ConnectedFrame.LocalRotation = b_attachment1.LocalRotation.ToHandedQuaternion();
-      } else
+      if (b_body2 == null)
       {
         c_attachmentPair.ReferenceObject = bodyDict[b_body1 as B_RigidBody].gameObject;
         c_attachmentPair.ReferenceFrame.LocalPosition = b_attachment1.LocalPosition.ToHandedVector3();
         c_attachmentPair.ReferenceFrame.LocalRotation = b_attachment1.LocalRotation.ToHandedQuaternion();
-        c_attachmentPair.ConnectedObject = b_body2 is null ? null : bodyDict[b_body2 as B_RigidBody].gameObject;
+        c_attachmentPair.ConnectedObject = null;
         c_attachmentPair.ConnectedFrame.LocalPosition = b_attachment2.LocalPosition.ToHandedVector3();
         c_attachmentPair.ConnectedFrame.LocalRotation = b_attachment2.LocalRotation.ToHandedQuaternion();
+      }
+      else
+      {
+        c_attachmentPair.ReferenceObject = bodyDict[b_body2 as B_RigidBody].gameObject;
+        c_attachmentPair.ReferenceFrame.LocalPosition = b_attachment2.LocalPosition.ToHandedVector3();
+        c_attachmentPair.ReferenceFrame.LocalRotation = b_attachment2.LocalRotation.ToHandedQuaternion();
+        c_attachmentPair.ConnectedObject = b_body1 is null ? null : bodyDict[b_body1 as B_RigidBody].gameObject;
+        c_attachmentPair.ConnectedFrame.LocalPosition = b_attachment1.LocalPosition.ToHandedVector3();
+        c_attachmentPair.ConnectedFrame.LocalRotation = b_attachment1.LocalRotation.ToHandedQuaternion();
       }
 
       constraint.SetComplianceAndDamping(b_connector.MainInteraction, overwriteIfDefault: true);
