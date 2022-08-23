@@ -23,6 +23,10 @@ RenderData:
     .doc: Relative file path to texture, given the model file declaring the texture filepath.
     .type: String
     .value: ""
+  name:
+    .doc: Name of the material.
+    .type: String
+    .value: ""
 
 Geometry:
   .extends: Scene.Node
