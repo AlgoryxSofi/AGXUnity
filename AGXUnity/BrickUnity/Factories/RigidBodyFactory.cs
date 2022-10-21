@@ -178,8 +178,7 @@ namespace AGXUnity.BrickUnity.Factories
       var meshes = MeshSplitter.Split(
                                         agxVertices,
                                         agxIndices,
-                                        v => v.ToHandedVector3() * (float)b_triMesh.Scale,
-                                        UInt16.MaxValue
+                                        v => v.ToHandedVector3() * (float)b_triMesh.Scale
                                         ).Meshes;
       au_mesh.SetSourceObject(null);
       foreach (var mesh in meshes)
@@ -212,8 +211,7 @@ namespace AGXUnity.BrickUnity.Factories
       var meshes = MeshSplitter.Split(
                                         agxVertices,
                                         agxIndices,
-                                        v => v.ToHandedVector3() * (float)b_r2DPMesh.Scale,
-                                        UInt16.MaxValue
+                                        v => v.ToHandedVector3() * (float)b_r2DPMesh.Scale
                                         ).Meshes;
       au_mesh.SetSourceObject(null);
       foreach (var mesh in meshes)
