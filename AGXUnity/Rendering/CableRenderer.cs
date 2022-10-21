@@ -51,28 +51,14 @@ namespace AGXUnity.Rendering
       m_segmentSpawner.Initialize( gameObject );
     }
 
-    protected override bool Initialize()
+    protected override void OnEnable()
     {
-      // Note that this is called in the editor as well [ExecuteInEditMode].
-      InitializeRenderer( true );
-
-      // Use post step forward callback to render while simulating.
-      if ( Application.isPlaying )
-        Simulation.Instance.StepCallbacks.PostStepForward += Render;
-
-      return true;
+      OnEnableDisable( true );
     }
 
-    protected override void OnDestroy()
+    protected override void OnDisable()
     {
-      if ( m_segmentSpawner != null )
-        m_segmentSpawner.Destroy();
-      m_segmentSpawner = null;
-
-      if ( Simulation.HasInstance )
-        Simulation.Instance.StepCallbacks.PostStepForward -= Render;
-
-      base.OnDestroy();
+      OnEnableDisable( false );
     }
 
     protected void LateUpdate()
@@ -122,6 +108,8 @@ namespace AGXUnity.Rendering
         }
         return;
       }
+      else if ( !m_segmentSpawner.IsValid )
+        InitializeRenderer( true );
 
       var it = native.begin();
       var endIt = native.end();
@@ -146,6 +134,24 @@ namespace AGXUnity.Rendering
 
       it.ReturnToPool();
       endIt.ReturnToPool();
+    }
+
+    private void OnEnableDisable( bool enable )
+    {
+      if ( enable ) {
+        InitializeRenderer( true );
+        if ( Application.isPlaying )
+          Simulation.Instance.StepCallbacks.PostStepForward += Render;
+      }
+      else {
+        if ( m_segmentSpawner != null ) {
+          m_segmentSpawner.Destroy();
+          m_segmentSpawner = null;
+        }
+
+        if ( Simulation.HasInstance && Application.isPlaying )
+          Simulation.Instance.StepCallbacks.PostStepForward -= Render;
+      }
     }
 
     private void DrawGizmos( bool isSelected )

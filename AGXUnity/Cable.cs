@@ -361,14 +361,10 @@ namespace AGXUnity
       AngularVelocityDamping  = Convert.ToSingle( native.getAngularVelocityDamping().maxComponent() );
     }
 
-    protected override void OnDestroy()
+    protected override void OnEnable()
     {
-      if ( Simulation.HasInstance )
-        GetSimulation().remove( Native );
-
-      Native = null;
-
-      base.OnDestroy();
+      if ( Native != null && Simulation.HasInstance )
+        GetSimulation().add( Native );
     }
 
     protected override bool Initialize()
@@ -378,15 +374,14 @@ namespace AGXUnity
 
       try {
         if ( Route.NumNodes < 2 )
-          throw new Exception( "Invalid number of nodes. Minimum number of route nodes is two." );
+          throw new Exception( $"{GetType().FullName} ERROR: Invalid number of nodes. Minimum number of route nodes is two." );
 
         agxCable.Cable cable = null;
         if ( RouteAlgorithm == RouteType.Segmenting ) {
           var result = SynchronizeRoutePointCurve();
           if ( !result.Successful )
-            throw new Exception( "Invalid cable route. Unable to initialize cable with " +
-                                 Route.NumNodes +
-                                 " nodes and resolution/length = " + ResolutionPerUnitLength + "." );
+            throw new Exception( $"{GetType().FullName} ERROR: Invalid cable route. Unable to initialize cable with " +
+                                 $" {Route.NumNodes} nodes and resolution/length = {ResolutionPerUnitLength}." );
 
           cable = CreateNative( result.NumSegments / Route.TotalLength );
 
@@ -414,20 +409,28 @@ namespace AGXUnity
             }
 
             if ( !cable.add( routeNode.GetInitialized<CableRouteNode>().Native ) )
-              throw new Exception( "Unable to add node to cable." );
+              throw new Exception( $"{GetType().FullName} ERROR: Unable to add node to cable." );
           } );
 
           if ( !success )
-            throw new Exception( string.Format( "Invalid route - unable to find segment length given resolution/length = {0}",
-                                                ResolutionPerUnitLength ) );
+            throw new Exception( $"{GetType().FullName} ERROR: Invalid route - unable to find segment length given resolution/length = {ResolutionPerUnitLength}." );
         }
         else {
           cable = CreateNative( ResolutionPerUnitLength );
           foreach ( var node in Route ) {
             if ( !cable.add( node.GetInitialized<CableRouteNode>().Native ) )
-              throw new Exception( "Unable to add node to cable." );
+              throw new Exception( $"{GetType().FullName} ERROR: Unable to add node to cable." );
           }
         }
+
+        cable.setName( name );
+
+        // Adding the cable to the simulation independent of if this
+        // cable is enabled or not, only to initialize it. If this
+        // component/game object is disabled, remove it later.
+        GetSimulation().add( cable );
+        if ( cable.getInitializationReport().getNumSegments() == 0 )
+          throw new Exception( $"{GetType().FullName} ERROR: Initialization failed. Check route and/or resolution." );
 
         Native = cable;
       }
@@ -437,9 +440,9 @@ namespace AGXUnity
         return false;
       }
 
-      Native.setName( name );
-
-      GetSimulation().add( Native );
+      // Remove if this cable is inactive/disabled (the cable has been added above).
+      if ( !isActiveAndEnabled )
+        GetSimulation().remove( Native );
 
       if ( Properties != null )
         Properties.GetInitialized<CableProperties>();
@@ -447,6 +450,22 @@ namespace AGXUnity
       SynchronizeProperties();
 
       return true;
+    }
+
+    protected override void OnDisable()
+    {
+      if ( Native != null && Simulation.HasInstance )
+        GetSimulation().remove( Native );
+    }
+
+    protected override void OnDestroy()
+    {
+      if ( Simulation.HasInstance )
+        GetSimulation().remove( Native );
+
+      Native = null;
+
+      base.OnDestroy();
     }
 
     private void Reset()

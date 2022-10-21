@@ -262,6 +262,11 @@ namespace AGXUnity.Model
       WriteTerrainDataOffset( Terrain, -MaximumDepth );
     }
 
+    protected override void OnEnable()
+    {
+      SetNativeEnable( true );
+    }
+
     protected override bool Initialize()
     {
       // Only printing the errors if something is wrong.
@@ -280,7 +285,14 @@ namespace AGXUnity.Model
       if ( Simulation.Instance.SolverSettings != null )
         GetSimulation().getSolver().setNumPPGSRestingIterations( (ulong)Simulation.Instance.SolverSettings.PpgsRestingIterations );
 
+      SetNativeEnable( isActiveAndEnabled );
+
       return true;
+    }
+
+    protected override void OnDisable()
+    {
+      SetNativeEnable( false );
     }
 
     protected override void OnDestroy()
@@ -300,6 +312,18 @@ namespace AGXUnity.Model
         GUIWindowHandler.Instance.Close( ShowForces );
 
       base.OnDestroy();
+    }
+
+    private void SetNativeEnable( bool enable )
+    {
+      if ( Native == null )
+        return;
+
+      if ( Native.getEnable() == enable )
+        return;
+
+      Native.setEnable( enable );
+      Native.getGeometry().setEnable( enable );
     }
 
     private void InitializeNative()
