@@ -1,16 +1,15 @@
-﻿using System;
+﻿using AGXUnity.Utils;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using AGXUnity.Utils;
-
 using GUI = AGXUnity.Utils.GUI;
 
 namespace AGXUnity.Model
-{
+{ 
   [AddComponentMenu( "AGXUnity/Model/Deformable Terrain" )]
-  [RequireComponent(typeof( Terrain ))]
+  [RequireComponent( typeof( Terrain ) )]
   [DisallowMultipleComponent]
-  public class DeformableTerrain : ScriptComponent
+  public class DeformableTerrain : DeformableTerrainBase
   {
     /// <summary>
     /// Native deformable terrain instance - accessible after this
@@ -43,115 +42,6 @@ namespace AGXUnity.Model
     [SerializeField]
     private List<DeformableTerrainShovel> m_shovels = new List<DeformableTerrainShovel>();
 
-    /// <summary>
-    /// Shovels associated to this terrain.
-    /// </summary>
-    [HideInInspector]
-    public DeformableTerrainShovel[] Shovels { get { return m_shovels.ToArray(); } }
-
-    [SerializeField]
-    private ShapeMaterial m_material = null;
-
-    /// <summary>
-    /// Shape material associated to this terrain.
-    /// </summary>
-    [AllowRecursiveEditing]
-    public ShapeMaterial Material
-    {
-      get { return m_material; }
-      set
-      {
-        m_material = value;
-        if ( Native != null ) {
-          if ( m_material != null && m_material.Native == null )
-            m_material.GetInitialized<ShapeMaterial>();
-          if ( m_material != null )
-            Native.setMaterial( m_material.Native );
-
-          // TODO: When m_material is null here it means "use default" but
-          //       it's currently not possible to understand which parameters
-          //       that has been set in e.g., Terrain::loadLibraryMaterial.
-        }
-      }
-    }
-
-    [SerializeField]
-    private DeformableTerrainMaterial m_terrainMaterial = null;
-
-    /// <summary>
-    /// Terrain material associated to this terrain.
-    /// </summary>
-    [AllowRecursiveEditing]
-    public DeformableTerrainMaterial TerrainMaterial
-    {
-      get { return m_terrainMaterial; }
-      set
-      {
-        m_terrainMaterial = value;
-
-        if ( Native != null ) {
-          if ( m_terrainMaterial != null )
-            Native.setTerrainMaterial( m_terrainMaterial.GetInitialized<DeformableTerrainMaterial>().Native );
-          else
-            Native.setTerrainMaterial( DeformableTerrainMaterial.CreateNative( "dirt_1" ) );
-        }
-      }
-    }
-
-    [SerializeField]
-    private DeformableTerrainProperties m_properties = null;
-
-    /// <summary>
-    /// Terrain properties associated to this terrain.
-    /// </summary>
-    [AllowRecursiveEditing]
-    public DeformableTerrainProperties Properties
-    {
-      get { return m_properties; }
-      set
-      {
-        if ( Native != null && m_properties != null )
-          m_properties.Unregister( this );
-
-        m_properties = value;
-
-        if ( Native != null && m_properties != null )
-          m_properties.Register( this );
-      }
-    }
-
-    [SerializeField]
-    private float m_maximumDepth = 20.0f;
-
-    /// <summary>
-    /// Maximum depth, it's not possible to dig deeper than this value.
-    /// This game object will be moved down MaximumDepth and MaximumDepth
-    /// will be added to the heights.
-    /// </summary>
-    [IgnoreSynchronization]
-    [ClampAboveZeroInInspector( true )]
-    public float MaximumDepth
-    {
-      get { return m_maximumDepth; }
-      set
-      {
-        if ( Native != null ) {
-          Debug.LogWarning( "DeformableTerrain MaximumDepth: Value is used during initialization" +
-                            " and cannot be changed when the terrain has been initialized.", this );
-          return;
-        }
-        m_maximumDepth = value;
-      }
-    }
-
-    public float ElementSize
-    {
-      get
-      {
-        return TerrainData.size.x / ( TerrainDataResolution - 1 );
-      }
-    }
-
     [SerializeField]
     private bool m_tempDisplayShovelForces = false;
 
@@ -181,60 +71,6 @@ namespace AGXUnity.Model
     }
 
     /// <summary>
-    /// Associate shovel instance to this terrain.
-    /// </summary>
-    /// <param name="shovel">Shovel instance to add.</param>
-    /// <returns>True if added, false if null or already added.</returns>
-    public bool Add( DeformableTerrainShovel shovel )
-    {
-      if ( shovel == null || m_shovels.Contains( shovel ) )
-        return false;
-
-      m_shovels.Add( shovel );
-
-      // Initialize shovel if we're initialized.
-      if ( Native != null )
-        Native.add( shovel.GetInitialized<DeformableTerrainShovel>().Native );
-
-      return true;
-    }
-
-    /// <summary>
-    /// Disassociate shovel instance to this terrain.
-    /// </summary>
-    /// <param name="shovel">Shovel instance to remove.</param>
-    /// <returns>True if removed, false if null or not associated to this terrain.</returns>
-    public bool Remove( DeformableTerrainShovel shovel )
-    {
-      if ( shovel == null || !m_shovels.Contains( shovel ) )
-        return false;
-
-      if ( Native != null )
-        Native.remove( shovel.Native );
-
-      return m_shovels.Remove( shovel );
-    }
-
-    /// <summary>
-    /// Find if shovel has been associated to this terrain.
-    /// </summary>
-    /// <param name="shovel">Shovel instance to check.</param>
-    /// <returns>True if associated, otherwise false.</returns>
-    public bool Contains( DeformableTerrainShovel shovel )
-    {
-      return shovel != null && m_shovels.Contains( shovel );
-    }
-
-    /// <summary>
-    /// Verifies so that all added shovels still exists. Shovels that
-    /// has been deleted are removed.
-    /// </summary>
-    public void RemoveInvalidShovels()
-    {
-      m_shovels.RemoveAll( shovel => shovel == null );
-    }
-
-    /// <summary>
     /// Resets heights of the Unity terrain and recreate native instance.
     /// </summary>
     public void ResetHeights()
@@ -259,12 +95,7 @@ namespace AGXUnity.Model
     /// </summary>
     public void PatchTerrainData()
     {
-      WriteTerrainDataOffset( Terrain, -MaximumDepth );
-    }
-
-    protected override void OnEnable()
-    {
-      SetNativeEnable( true );
+      TerrainUtils.WriteTerrainDataOffset( Terrain, -MaximumDepth );
     }
 
     protected override bool Initialize()
@@ -285,14 +116,9 @@ namespace AGXUnity.Model
       if ( Simulation.Instance.SolverSettings != null )
         GetSimulation().getSolver().setNumPPGSRestingIterations( (ulong)Simulation.Instance.SolverSettings.PpgsRestingIterations );
 
-      SetNativeEnable( isActiveAndEnabled );
+      SetEnable( isActiveAndEnabled );
 
       return true;
-    }
-
-    protected override void OnDisable()
-    {
-      SetNativeEnable( false );
     }
 
     protected override void OnDestroy()
@@ -314,21 +140,9 @@ namespace AGXUnity.Model
       base.OnDestroy();
     }
 
-    private void SetNativeEnable( bool enable )
-    {
-      if ( Native == null )
-        return;
-
-      if ( Native.getEnable() == enable )
-        return;
-
-      Native.setEnable( enable );
-      Native.getGeometry().setEnable( enable );
-    }
-
     private void InitializeNative()
     {
-      var nativeHeightData = WriteTerrainDataOffset( Terrain, MaximumDepth );
+      var nativeHeightData = TerrainUtils.WriteTerrainDataOffset( Terrain, MaximumDepth );
 
       transform.position = transform.position + MaximumDepth * Vector3.down;
 
@@ -345,50 +159,6 @@ namespace AGXUnity.Model
         Native.add( shovel.GetInitialized<DeformableTerrainShovel>()?.Native );
 
       GetSimulation().add( Native );
-    }
-
-    /// <summary>
-    /// Writes <paramref name="offset"/> to <paramref name="terrain"/> height data.
-    /// </summary>
-    /// <param name="terrainData">Terrain to modify.</param>
-    /// <param name="offset">Height offset.</param>
-    private static TerrainUtils.NativeHeights WriteTerrainDataOffset( Terrain terrain, float offset )
-    {
-      var terrainData        = terrain.terrainData;
-      var nativeHeightData   = TerrainUtils.FindHeights( terrainData );
-      var tmp                = new float[,] { { 0.0f } };
-      var dataMaxHeight      = terrainData.size.y;
-      var maxClampedHeight   = -1.0f;
-      for ( int i = 0; i < nativeHeightData.Heights.Count; ++i ) {
-        var newHeight = nativeHeightData.Heights[ i ] += offset;
-
-        var vertexX = i % nativeHeightData.ResolutionX;
-        var vertexY = i / nativeHeightData.ResolutionY;
-
-        tmp[ 0, 0 ] = (float)newHeight / terrainData.heightmapScale.y;
-        if ( newHeight > dataMaxHeight )
-          maxClampedHeight = System.Math.Max( maxClampedHeight, (float)newHeight );
-
-        terrainData.SetHeightsDelayLOD( TerrainUtils.TerrainDataResolution( terrainData ) - vertexX - 1,
-                                        TerrainUtils.TerrainDataResolution( terrainData ) - vertexY - 1,
-                                        tmp );
-      }
-
-      if ( maxClampedHeight > 0.0f ) {
-        Debug.LogWarning( "Terrain heights were clamped: UnityEngine.TerrainData max height = " +
-                          dataMaxHeight +
-                          " and AGXUnity.Model.DeformableTerrain.MaximumDepth = " +
-                          offset +
-                          ". Resolve this by increasing max height and lower the terrain or decrease Maximum Depth.", terrain );
-      }
-
-#if UNITY_2019_1_OR_NEWER
-      terrainData.SyncHeightmap();
-#else
-      terrain.ApplyDelayedHeightmapModification();
-#endif
-
-      return nativeHeightData;
     }
 
     private void ResetTerrainDataHeightsAndTransform()
@@ -487,5 +257,64 @@ namespace AGXUnity.Model
 
     private Terrain m_terrain = null;
     private float[,] m_initialHeights = null;
+
+    // -----------------------------------------------------------------------------------------------------------
+    // ------------------------------- Implementation of DeformableTerrainBase -----------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    public override float ElementSize { get => TerrainData.size.x / ( TerrainDataResolution - 1 ); }
+    public override DeformableTerrainShovel[] Shovels { get { return m_shovels.ToArray(); } }
+    public override agx.GranularBodyPtrArray GetParticles() { return Native?.getSoilSimulationInterface().getSoilParticles(); }
+    public override agxTerrain.SoilSimulationInterface GetSoilSimulationInterface() { return Native?.getSoilSimulationInterface(); }
+    public override agxTerrain.TerrainProperties GetProperties() { return Native?.getProperties(); }
+
+    public override bool Add( DeformableTerrainShovel shovel )
+    {
+      if ( shovel == null || m_shovels.Contains( shovel ) )
+        return false;
+
+      m_shovels.Add( shovel );
+
+      // Initialize shovel if we're initialized.
+      if ( Native != null )
+        Native.add( shovel.GetInitialized<DeformableTerrainShovel>().Native );
+
+      return true;
+    }
+
+    public override bool Remove( DeformableTerrainShovel shovel )
+    {
+      if ( shovel == null || !m_shovels.Contains( shovel ) )
+        return false;
+
+      if ( Native != null )
+        Native.remove( shovel.Native );
+
+      return m_shovels.Remove( shovel );
+    }
+
+    public override bool Contains( DeformableTerrainShovel shovel ) 
+    { 
+      return shovel != null && m_shovels.Contains( shovel );
+    }
+
+    public override void RemoveInvalidShovels()
+    {
+      m_shovels.RemoveAll( shovel => shovel == null );
+    }
+
+    protected override bool IsNativeNull() { return Native == null; }
+    protected override void SetShapeMaterial( agx.Material material, agxTerrain.Terrain.MaterialType type ) { Native.setMaterial( material, type ); }
+    protected override void SetTerrainMaterial( agxTerrain.TerrainMaterial material ) { Native.setTerrainMaterial( material ); }
+    protected override void SetEnable( bool enable )
+    {
+      if ( Native == null )
+        return;
+
+      if ( Native.getEnable() == enable )
+        return;
+
+      Native.setEnable( enable );
+      Native.getGeometry().setEnable( enable );
+    }
   }
 }
