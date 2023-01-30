@@ -157,4 +157,31 @@ MyRobot:
     .type: Sensor.ConnectorTorque3DSensor
     connector: this.worldConnector
 
+MyRobotWithIMU:
+  .extends: MyRobot
 
+  imu:
+    .type: Robotics.IMU
+    attachment: arm1.segment1.outputAttachment
+
+MyRosRobotWithIMU:
+  .extends: MyRobotWithIMU
+
+  communicationProtocol: CommunicationProtocol.RosCommunicationProtocol
+  jointForceSensor:
+    protocolReference: jointForceSensor
+  jointTorqueSensor:
+    protocolReference: jointTorqueSensor
+  worldForceSensor:
+    protocolReference: worldForceSensor
+  worldTorqueSensor:
+    protocolReference: worldTorqueSensor
+  # Remove the alone signal
+  # To only have sensors
+  # Now there should be as many publishers as output signals
+  # and as many subscribers as input signals
+  jointVelocityOutput: null
+
+MyRos2RobotWithIMU:
+  .extends: MyRosRobotWithIMU
+  communicationProtocol: CommunicationProtocol.Ros2CommunicationProtocol

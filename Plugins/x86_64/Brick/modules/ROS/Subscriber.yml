@@ -4,6 +4,10 @@ Subscriber:
   .abstract: true
   topic:
     .type: String
+  rosVersion:
+    .doc: Possible to choose ROS or ROS2. There will be a difference between some message types.
+    .type: ROS.ROSVersion
+    .value: ROS.ROSVersion.ROS2
 
 DefaultMessageSubscriber:
   .extends: Subscriber

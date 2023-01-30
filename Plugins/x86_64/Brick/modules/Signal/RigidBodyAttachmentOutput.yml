@@ -1,0 +1,23 @@
+.format: 4
+
+RigidBodyAttachmentOutput:
+  .extends: Signal.NodeVectorOutput
+  .doc: > 
+    Outputs a Vec3 given some 3D data in a RigidBodyAttachment.
+    Data is expected to be to be computed externally,
+    updated by the UpdateData function
+    and cached in local variable.
+    
+    The parent body of the RigidBodyAttachment will by default
+    define the coordinate system for the Vector Output,
+    unless the referenceFrame attribute is not default.
+    If the referenceFrame is declared to null (not default null),
+    the vector output is in world coordinates.
+
+  attachment:
+    .type: Physics.Mechanics.RigidBodyAttachment
+    .value: null
+
+  node: this.attachment
+
+  referenceNode: this.attachment

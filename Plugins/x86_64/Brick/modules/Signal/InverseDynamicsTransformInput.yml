@@ -1,0 +1,53 @@
+.format: 4
+
+InverseDynamicsTransformInput:
+  .doc: >
+    TODO, move this functionality to AGXBrick,
+    since it is very agxModel::InverseDynamics specific.
+    The InverseDynamicsTransformInput signal will update
+    the desired transform of the body assigned.
+    Valid when using any InverseDynamics setting of AssistedControl
+    The limits are valid for any SequentialInverseDynamics setting, 
+    and is limiting the accepted error of the fiunal transform.
+    The two stiffness values define the stiffness of the spring
+    that will pull the body in the motion simulation done by
+    agxModel::InverseDynamics.
+    useLock will specify if all 6 degrees of freedom will be
+    constrained to the kinematic body pulling the body in the
+    motion simulation. If set false a distance constraint will
+    be created instead (1 dof)
+  .extends: Signal.Input<Scene.Transform>
+  body:
+    .type: Physics.Mechanics.RigidBody
+  positionLimit:
+    .type: Real
+    .value: 0.05
+  rotationLimit:
+    .type: Real
+    .value: 0.05
+
+  useLock:
+    .doc: >
+      If set false the pull 6 DOF constraint pulling
+      is replaced with a 1DOF distance joint
+    .type: Bool
+    .value: true
+  
+  rotationalStiffness:
+    .doc: >
+      Assuming the InverseDynamics model is using a 6DOF
+      constraint to move the body in the motion simulation
+      of agxModel::InverseDynamics.
+      The rotationalStiffness will be set to all three rotational
+      degrees of freedom.
+    .type: Real
+    .value: 1E6
+
+  translationalStiffness:
+    .doc: >
+      Will define the stiffness for all translational degrees
+      of freedom of the constraint trying to move the body
+      in the motion simulation of agxModel::InverseDynamics.
+      3 DOF if useLock is true, otherwise just 1DOF.
+    .type: Real
+    .value: 1E6

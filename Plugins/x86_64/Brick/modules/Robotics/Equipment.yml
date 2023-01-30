@@ -1,0 +1,12 @@
+.format: 4
+.import:
+  Physics: [Component]
+
+Equipment:
+  .extends: Component
+  wantInternalPositioning: true
+  .doc: >
+    A Component which include Robotics.Sensors
+    Base class for defining robot accessories, like tools, arms, IMU, dresspacks etc.
+    The Equipment runtime implementation allow the user to: 
+     - access all internal Sensors

@@ -24,6 +24,13 @@ Robot:
     It is possible to declare several external segments/joints,
     they will join in the same external arm.
 
+    Only HingeConnector and PrismaticConnector are supported
+    types for generating Joints from external connectors.
+    
+    Note! For the mechanism for parsing the connectivity and
+    creating Robot arms with segments and joints at least one
+    segment or joint needs to be declared at robot root level.
+
   wantInternalPositioning: True
 
   base:
@@ -34,5 +41,33 @@ Robot:
     .type: CommunicationProtocol
     .value: null
 
+  defaultInputSignalType:
+    .type: Robotics.SignalType
+    .value: Robotics.SignalType.InputPositionSignal
 
+  createJointSensorsOfExternals:
+    .doc: >
+      Will define define the createJointSensorsOfExternals attribute
+      for all external joints which are not declared in the Robot.
+      Can be overriden by declaring the joint and reference it
+      using the externalReference attribute.
+    .type: Bool
+    .value: True
+
+  assistedControlType:
+    .doc: > 
+      For assistant control of torque controlled joints.
+    .type: Robotics.AssistedControlType
+    .value: Robotics.AssistedControlType.NoAssistance
+
+  assistedControlExternals:
+    .doc: >
+      Populate this list with Physics.Component's and
+      RigidBodies that you like the assisted control system
+      to know about. Plain Geometries are not supported! 
+      To include geometries fixed in world, the geometries
+      must instead be part of a RigidBody with motionControl
+      set to Static.
+    .type: List<Scene.Node>
+    .value: []
 

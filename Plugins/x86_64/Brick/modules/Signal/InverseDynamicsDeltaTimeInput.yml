@@ -1,0 +1,11 @@
+.format: 4
+
+InverseDynamicsDeltaTimeInput:
+  .doc: >
+        Set the time it will take for a the body to reach a position set
+        by a InverseDynamicsTransformInput. Note that one AssistedControl
+        system can only have one of these signals. If more are present, they will
+        be ignored. Changing the input time will trigger a new path planning.
+  .extends: Signal.Input<Real>
+  body:
+    .type: Physics.Mechanics.RigidBody

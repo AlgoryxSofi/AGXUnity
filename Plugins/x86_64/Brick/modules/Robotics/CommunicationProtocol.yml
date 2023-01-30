@@ -9,3 +9,8 @@ RosCommunicationProtocol:
   .const: true
   name: RosProtocol
 
+Ros2CommunicationProtocol:
+  .extends: CommunicationProtocol
+  .const: true
+  name: Ros2Protocol
+

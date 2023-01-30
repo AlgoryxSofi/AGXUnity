@@ -1,0 +1,6 @@
+.format: 4
+ 
+AttachmentAngularVelocityOutput:
+  .extends: Signal.RigidBodyAttachmentOutput
+  .doc: >
+    Outputs the angular velocity of a Scene.Node as a Vec3.

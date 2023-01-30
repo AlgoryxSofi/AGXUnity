@@ -1,0 +1,19 @@
+.format: 4
+
+ROSVersion:
+  .abstract: true
+  .doc: Generic ROS version
+  version:
+    .type: String
+
+ROS:
+  .doc: Choose to use original ROS message types. For example ROS noetic.
+  .extends: ROSVersion
+  .const: true
+  version: ROS
+
+ROS2:
+  .doc: Choose to use ROS2 message types. For example ROS foxy.
+  .extends: ROSVersion
+  .const: true
+  version: ROS2

@@ -1,7 +1,7 @@
 .format: 4
 
 ConnectorVectorOutput:
-  .extends: Signal.Output<Vec3>
+  .extends: Signal.VectorOutput
   .doc: > 
     Outputs the force/torque vector from an AttachmentPairConnector.
     onlyMainInteraction as true, will ignore the other interactions.

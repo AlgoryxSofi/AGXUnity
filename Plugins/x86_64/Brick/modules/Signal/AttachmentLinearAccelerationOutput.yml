@@ -1,0 +1,6 @@
+.format: 4
+ 
+AttachmentLinearAccelerationOutput:
+  .extends: Signal.RigidBodyAttachmentOutput
+  .doc: >
+    Outputs the linear acceleration of a Scene.Node as a Vec3

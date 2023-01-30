@@ -8,6 +8,10 @@ Publisher:
     .doc: The publish frequency, in Hz
     .type: Real
     .value: -1  # -1 corresponds to publishing every timestep
+  rosVersion:
+    .doc: Possible to choose ROS or ROS2. There will be a difference between some message types.
+    .type: ROS.ROSVersion
+    .value: ROS.ROSVersion.ROS2
 
 DefaultMessagePublisher:
   .extends: Publisher

@@ -1,0 +1,22 @@
+.format: 4
+
+NodeVectorOutput:
+  .extends: Signal.VectorOutput
+  .doc: > 
+    Outputs a Vec3 given some 3D data in a node.
+    Data is expected to be to be computed externally,
+    updated by the UpdateData function
+    and cached in local variable.
+
+  node:
+    .doc: >
+      The node which have some 3D vector to meassure and send as an output signal
+    .type: Scene.Node
+    .value: null
+
+  referenceNode:
+    .doc: >
+      The frame of which coordinate system the resulting vector will be reported in.
+      If set to null, the vector will be reported in the world coordinate system.
+    .type: Scene.Node
+    .value: this.node

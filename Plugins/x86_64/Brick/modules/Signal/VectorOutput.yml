@@ -1,0 +1,10 @@
+.format: 4
+
+VectorOutput:
+  .extends: Signal.Output<Vec3>
+  .doc: > 
+    Outputs a Vec3.
+    Data is expected to be to be computed externally,
+    updated by the UpdateData function
+    and cached in local variable.
+
