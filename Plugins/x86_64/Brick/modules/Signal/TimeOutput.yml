@@ -1,0 +1,8 @@
+.format: 4
+
+TimeOutput:
+  .extends: Signal.Output<Real>
+  .doc: Simulation time output signal
+  time:
+    .type: Real
+    .value: 0

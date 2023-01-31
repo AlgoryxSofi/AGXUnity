@@ -1,0 +1,64 @@
+.format: 4
+
+AssistedControlType:
+  .doc: >
+    A status for a Robotics.Robot using inverse dynamics to control
+    the robot joints in different ways. Forces will be added to each joint
+    with inputSignalType set to InputForceSignal.
+    All included RigidBodies will be included in the system that computes the 
+    forces and torques, including non force controlled joints and other connectors.
+    If there are components or RigidBodies outside the robot definition to be 
+    included in the assisted control system, RigidBodies to grasp or to collide 
+    with, those should be added to the assistedControlExternals list of the Robot.
+
+  name:
+    .type: String
+
+NoAssistance:
+  .extends: AssistedControlType
+  .const: true
+  name: NoAssistance
+
+GravityCompensation:
+  .extends: AssistedControlType
+  .doc: >
+    When set to a Robot, all Joints with inputSignalType set to InputForceSignal
+    of all included RobotArm's will be gravity compensated. This means that
+    forces will be added to those joints to keep the robot in its current 
+    position. External forces added will however change the movement of the
+    robot.
+  .const: true
+  name: GravityCompensation
+
+SequentialInverseDynamics:
+  .extends: AssistedControlType
+  .doc: >
+    Will listen for instructions for wanted position and orientation for a 
+    specific rigid body, in a specific time. On updated, instructions for a 
+    control path is calculated, adding forces at the controlled joints to reach
+    the wanted position. When the wanted position is reached, all force inputs 
+    will stop. Will not recalibrate path or forces added until after a new 
+    position is set.
+  .const: true
+  name: SequentialInverseDynamics
+
+AdaptiveInverseDynamics:
+  .extends: AssistedControlType
+  .doc: >
+    Inverse dynamics with a sync of all transforms and velocities for each time step.
+    Will try to reach a specific pose in space, just like SequentialInverseDynamics, 
+    and is preferable if contacts with unknown objects might happen.
+    Will listen to the same signal inputs also, and the target and target time can be 
+    changed every frame, if wanted.
+  .const: true
+  name: AdaptiveInverseDynamics
+
+SequentialInverseDynamicsWithGravityCompensation:
+  .extends: AssistedControlType
+  .doc: >
+    Similar to SequentialInverseDynamics, but when reaching a position 
+    GravityCompensation is activated, so that the robot stays at the given 
+    position. When a new position is given, GravityCompensation is disablead 
+    and SequentialInverseDynamics activated again.
+  .const: true
+  name: SequentialInverseDynamicsWithGravityCompensation

@@ -1,0 +1,10 @@
+.format: 4
+
+TorqueConverterLockUpInput:
+  .extends: Signal.Input<Bool>
+  .doc: >
+    Control the lock up of the torque converter. 
+    If set to true, the torque converter will lock the velocity between
+    the pump and the turbine.
+  torqueConverter:
+    .type: Physics.DriveTrain.TorqueConverterConnector

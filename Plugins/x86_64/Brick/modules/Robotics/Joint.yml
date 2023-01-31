@@ -82,7 +82,7 @@ Joint:
   maxMotorForce:
     .doc: Maximum force/torque for a velocity or position driven Joint.
     .type: Real
-    .value: 0
+    .value: .inf
 
   attachmentStiffness:
     .doc: Stiffness definition for the non-motor degrees of freedom.
@@ -97,6 +97,24 @@ Joint:
   inputSignalType:
     .doc: Automatically sets up motor or lock and a input signal.
     .type: Robotics.SignalType
+    .value: null
+
+  createJointSensorsOfExternals:
+    .doc: >
+      Create one force/torque, one position/angle and one velocity
+      sensor for this joint if it is an external joint (URDF or other).
+      The protocol reference will be:
+      joint.ProtocolReference + "_force", "_position" or "_velocity"
+    .type: Bool
+    .value: True
+
+  communicationProtocol:
+    .doc: >
+      If not specified, the sensor will have the same protocol
+      as the Robot it is part of.
+      The Joint need to define the protocolReference
+      for sensors, publishers, subscribers etc. to be created.
+    .type: CommunicationProtocol
     .value: null
 
   protocolReference:

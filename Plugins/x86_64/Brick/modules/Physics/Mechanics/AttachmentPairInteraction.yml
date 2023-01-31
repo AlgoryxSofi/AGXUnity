@@ -54,6 +54,22 @@ MotorInteraction1D:
   speed:
     .type: Real
     .value: 0
+  
+  constantForce:
+    .doc: >
+      If also enableConstantForce is set True, the motor will always apply this
+      constant force. Used in practise to do force/torque control.
+      Can not override any min or max force declared for the interaction,
+      The force will be clamped within thise limits.
+      Can be updated with a signal.
+    .type: Real
+    .value: 0.0
+  
+  enableConstantForce:
+    .doc: >
+      If set, the motor will always apply the constantForce. 
+    .type: Bool
+    .value: false
 
 
 LockInteraction1D:

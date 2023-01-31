@@ -1,0 +1,28 @@
+.format: 4
+
+# IMU - internal measurement unit
+# for measuring linear acceleration and angular velocity
+.import:
+  Physics.Mechanics: [RigidBodyAttachment]
+  Robotics: [Equipment]
+  Robotics.Sensor: [LinearAccelerationSensor, AngularVelocitySensor]
+
+IMU:
+  .extends: Equipment
+  .doc: >
+    A nominal IMU. 
+    Will meassure the Linear Acceleration and Angular Velocity
+    of the attachment relative to its parent RigidBody.
+    Has internally two different Brick.Robotics.Sensor's,
+    LinearAccelerationSensor and AngularVelocitySensor.
+
+  attachment:
+    .type: RigidBodyAttachment
+
+  linearAcceleration:
+    .type: LinearAccelerationSensor
+    attachment: this.attachment
+  
+  angularVelocity:
+    .type: AngularVelocitySensor
+    attachment: this.attachment

@@ -13,6 +13,15 @@ Sensor:
     .type: String
     .value: ""
 
+  communicationProtocol:
+    .doc: >
+      If not specified, the sensor will have the same protocol
+      as the Robot it is part of.
+      The Sensor need to define the protocolReference
+      for publishers to be created.
+    .type: CommunicationProtocol
+    .value: null
+
   protocolReference:
     .doc: Reference for the sensor use for communication over some protocol
     .type: String
@@ -60,6 +69,78 @@ Vec3Sensor:
       in the world coordinate frame
     .type: Physics.Mechanics.RigidBody
     .value: null
+
+
+Vec3NodeSensor:
+  .extends: Sensor
+  .abstract: true
+  .doc: > 
+    Abstract class for 3D vector sensor
+
+
+  node:
+    .doc: > 
+      Scene.Node for which some 3D property is reported. 
+    .type: Scene.Node
+
+  referenceNode:
+    .doc: > 
+      Reference Scene.Node in which coordinate system
+      the output vector is reported. 
+      If set to null, the data will be
+      in the world coordinate frame.
+      By default the same node as for the measurement
+    .type: Scene.Node
+    .value: this.node
+
+Vec3AttachmentSensor:
+  .extends: Vec3NodeSensor
+  .abstract: true
+
+  attachment:
+    .doc: >
+      The the measured output of the Vec3AttachmentSensor
+      can be either relative world frame or relative the frame
+      of the parent RigidBody of this attachment.
+      
+      This is toggled using the boolean relativeBodyFrame attribute.
+      
+      The resulting measured output can be reported relative an
+      arbitrary reference frame.
+      If the referenceNode is declared to null (not default null),
+      the vector output is in world coordinates,
+      otherwise in the referenceNode frame.
+    .type: Physics.Mechanics.RigidBodyAttachment
+  
+  node: this.attachment
+
+  relativeBodyFrame:
+    .type: Bool
+    .value: True
+
+
+LinearAccelerationSensor:
+  .extends: Vec3AttachmentSensor
+  .doc: >
+    3D Sensor measuring linear acceleration of the attachment.
+    Toggle the relativeBodyFrame attribute for acceleration of the
+    frame relative the parent RigidBody of the attachment, or world.
+    
+    Set the referenceNode attribute to null for world frame measurement.
+    Internally creates a Signal.AttachmentLinearAccelerationOutput
+    which is accessible with sensor.GetOrCreateSignal()
+
+AngularVelocitySensor:
+  .extends: Vec3AttachmentSensor
+  .doc: >
+    3D Sensor measuring angular velocity of the attachment.
+    Toggle the relativeBodyFrame attribute for angular velocity of the
+    frame relative the parent RigidBody of the attachment, or world.
+    
+    Set the referenceNode attribute to null for world frame measurement.
+    Internally creates a Signal.AttachmentAngularVelocityOutput
+    which is accessible with sensor.GetOrCreateSignal()
+    
 
 Force3DSensor:
   .extends: Vec3Sensor

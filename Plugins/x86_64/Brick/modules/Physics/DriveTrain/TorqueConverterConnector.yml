@@ -67,6 +67,17 @@ TorqueConverterConnector:
     .type: Real
     .value: 890
 
+  lockUpEnable:
+    .doc: If set to true, the torque converter will lock up. 
+          A locked torque converter will have the same pump and turbine velocities.
+    .type: Bool
+    .value: false
+
+  lockUpTime:
+    .doc: Decides how long time it should take to lock up the torque converter, in seconds.
+    .type: Real
+    .value: 0.2
+
   inputAttachment:
     .type: GearAttachment
     .value: null

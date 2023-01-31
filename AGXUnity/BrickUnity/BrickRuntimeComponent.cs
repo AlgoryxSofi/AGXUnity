@@ -67,8 +67,6 @@ namespace AGXUnity.BrickUnity
       m_component = BrickUtils.LoadComponentFromFile(filePath, modelName);
       var au_sim = AGXUnity.Simulation.Instance.GetInitialized<AGXUnity.Simulation>();
       m_brickSimulation = new B_BrickSimulation(au_sim.Native);
-      au_sim.StepCallbacks.PreStepForward += m_brickSimulation.SyncInputParameters;
-      au_sim.StepCallbacks.PostStepForward += m_brickSimulation.SyncOutputParameters;
 
       // TODO: Temporary fix to make sure the external component parameters from AGX are
       // transfered to the Brick object
@@ -286,6 +284,34 @@ namespace AGXUnity.BrickUnity
 
       }
       return go_outputs;
+    }
+
+
+    protected override void OnDisable()
+    {
+      if (m_brickSimulation != null)
+        m_brickSimulation.SynchronizeWithAgx = false;
+    }
+
+
+
+    protected override void OnEnable()
+    {
+      if (m_brickSimulation != null)
+        m_brickSimulation.SynchronizeWithAgx = true;
+    }
+
+
+    protected override void OnDestroy()
+    {
+      if (m_brickSimulation !=  null)
+      {
+        bool removedSync = m_brickSimulation.RemoveSyncCallbacks();
+        if (!removedSync)
+          Debug.LogWarning("Could not fully remove brick simulation callbacks");
+      }
+
+      base.OnDestroy();
     }
   }
 }

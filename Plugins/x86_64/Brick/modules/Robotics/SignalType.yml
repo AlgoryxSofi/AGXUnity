@@ -38,3 +38,12 @@ OutputPositionSignal:
   .extends: SignalType
   .const: true
   name: OutputPositionSignal
+
+ArbitraryInputSignal:
+  .extends: SignalType
+  .doc: >
+    Let the input signal type depend on something else than the specified one.
+    For example if a Joint has a drive train, then the signal type is defined
+    by the first declared signal in the Joint, not the signal type.
+  .const: true
+  name: ArbitraryInputSignal

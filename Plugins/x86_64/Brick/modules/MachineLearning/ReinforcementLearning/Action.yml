@@ -8,7 +8,11 @@ Action:
     .type: Signal.SignalBase
 
 ContinuousAction:
-  .doc: Action with a continuous value between maxValue and minValue
+  .doc: >
+    Action with a continuous value between maxValue and minValue
+    Use min/maxValues when the signal is a single value signal.
+    If the signal is a Vec3 or Transform or similar, the min/maxValues
+    lists can be used to scale each individual value. 
   .extends: Action
   maxValue:
     .type: Real
@@ -16,6 +20,13 @@ ContinuousAction:
   minValue:
     .type: Real
     .value: -1
+
+  maxValues:
+    .type: List<Real>
+    .value: []
+  minValues:
+    .type: List<Real>
+    .value: []
 
 
 DiscreteAction:
