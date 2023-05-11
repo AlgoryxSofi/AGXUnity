@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -351,7 +351,7 @@ namespace AGXUnityEditor
 
         var message = prefix +
                       $"AGX Dynamics for Unity requires .NET API compatibility level: {apiCompatibilityLevelName}.\n" +
-                      $"<b>Edit -> Project Settings... -> Player -> Other Settings -> Configuration -> Api Compatibility Level -> {apiCompatibilityLevelName}</b>";
+                      $"<b>AGXUnity -> Settings -> .NET Compatibility Level</b>";
         if ( infoWarningOrError == "info" )
           Debug.Log( message );
         else if ( infoWarningOrError == "warning" )
@@ -810,11 +810,6 @@ namespace AGXUnityEditor
         AGXUnity.LicenseManager.LoadFile();
 
         AGXUnity.NativeHandler.Instance.ValidateLicense();
-        if ( EditorSettings.Instance.AGXDynamics_LogEnabled &&
-             !string.IsNullOrEmpty( EditorSettings.Instance.AGXDynamics_LogPath.Trim() ) )
-          agx.Logger.instance().openLogfile( EditorSettings.Instance.AGXDynamics_LogPath.Trim(),
-                                             true,
-                                             true );
       }
       catch ( Exception ) {
         return EnvironmentState.Uninitialized;

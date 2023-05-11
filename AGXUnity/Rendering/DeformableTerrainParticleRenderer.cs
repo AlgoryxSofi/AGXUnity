@@ -92,9 +92,8 @@ namespace AGXUnity.Rendering
     protected override bool Initialize()
     {
       ParticleProvider = GetComponent<DeformableTerrainBase>();
-      if ( ParticleProvider == null)
-      {
-        Debug.LogError("DeformableTerrainParticleRenderer parent game object '" + gameObject.name + "' has no particle provider!");
+      if ( ParticleProvider == null ) {
+        Debug.LogError( "DeformableTerrainParticleRenderer parent game object '" + gameObject.name + "' has no particle provider!" );
         return false;
       }
 
@@ -106,6 +105,8 @@ namespace AGXUnity.Rendering
 
     protected override void OnEnable()
     {
+      Camera.onPreCull -= Render;
+      Camera.onPreCull += Render;
       Simulation.Instance.StepCallbacks.PostStepForward += PostUpdate;
 
       if ( State == States.INITIALIZED )
@@ -114,6 +115,7 @@ namespace AGXUnity.Rendering
 
     protected override void OnDisable()
     {
+      Camera.onPreCull -= Render;
       // We may not "change GameObject hierarchy" when the actual
       // game object is being destroyed, e.g., when hitting stop.
       if ( gameObject.activeSelf )
@@ -195,7 +197,6 @@ namespace AGXUnity.Rendering
         m_granuleMatrices = new List<MatrixUnion> { new MatrixUnion() };
         m_granuleMatrices[ 0 ].unityMats = new Matrix4x4[ 1023 ];
         m_meshInstanceProperties = new MaterialPropertyBlock();
-        m_meshInstanceScale = filters[ 0 ].transform.lossyScale;
       }
 
       Synchronize();
@@ -209,7 +210,10 @@ namespace AGXUnity.Rendering
         Synchronize();
         m_needsSynchronize = false;
       }
+    }
 
+    private void Render(Camera cam)
+    {
       var isValidDrawInstanceMode = RenderMode == GranuleRenderMode.DrawMeshInstanced &&
                                     m_numGranulars > 0 &&
                                     m_meshInstance != null &&
@@ -225,7 +229,9 @@ namespace AGXUnity.Rendering
                                     m_numGranulars,
                                     m_meshInstanceProperties,
                                     m_shadowCastingMode,
-                                    m_receiveShadows );
+                                    m_receiveShadows,
+                                    0,
+                                    cam);
       }
       // DrawMeshInstanced only supports up to 1023 meshes for each call,
       // we need to subdivide if we have more particles than that.
@@ -239,14 +245,16 @@ namespace AGXUnity.Rendering
                                       count,
                                       m_meshInstanceProperties,
                                       m_shadowCastingMode,
-                                      m_receiveShadows );
+                                      m_receiveShadows,
+                                      0,
+                                      cam );
         }
       }
     }
 
     private void Synchronize()
     {
-      var granulars = ParticleProvider.GetParticles();
+      var granulars = ParticleProvider?.GetParticles();
       if ( granulars == null ) return;
 
       m_numGranulars = (int)granulars.size();
@@ -262,7 +270,7 @@ namespace AGXUnity.Rendering
         // amount of particles that can be drawn with DrawMeshInstanced.
         while ( m_numGranulars / 1023 + 1 > m_granuleMatrices.Count ) {
           m_granuleMatrices.Add( new MatrixUnion() );
-          m_granuleMatrices[ ( m_numGranulars / 1023 ) ].unityMats = new Matrix4x4[ 1023 ];
+          m_granuleMatrices[ m_granuleMatrices.Count - 1 ].unityMats = new Matrix4x4[ 1023 ];
         }
 
         for ( int arrayIndex = 0; arrayIndex < ( m_numGranulars / 1023 + 1 ); ++arrayIndex )
@@ -310,7 +318,6 @@ namespace AGXUnity.Rendering
       m_meshInstanceMaterial = null;
       m_granuleMatrices = null;
       m_meshInstanceProperties = null;
-      m_meshInstanceScale = Vector3.one;
     }
 
     private void Destroy( int count )
@@ -341,7 +348,6 @@ namespace AGXUnity.Rendering
     private Mesh m_meshInstance = null;
     private ShadowCastingMode m_shadowCastingMode = ShadowCastingMode.On;
     private bool m_receiveShadows = true;
-    private Vector3 m_meshInstanceScale = Vector3.one;
     private Material m_meshInstanceMaterial = null;
   }
 }
