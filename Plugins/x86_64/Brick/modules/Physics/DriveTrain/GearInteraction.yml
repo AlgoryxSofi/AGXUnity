@@ -21,4 +21,18 @@ GearInteraction:
     .type: Real
     .value: 1.0
 
+  minTorque:
+    .type: Real
+    .value: -.inf
+    .doc: >
+          the smallest possible torque this interaction can transfer. 
+          If not set, it is considered negative infinity.
+
+  maxTorque:
+    .type: Real
+    .value: .inf
+    .doc: >
+          the largest possible torque this interaction can transfer.
+          If not set, it is considered infinity.
+
 

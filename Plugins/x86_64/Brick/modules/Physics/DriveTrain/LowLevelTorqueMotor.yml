@@ -1,0 +1,46 @@
+.format: 4
+
+.import:
+  Physics.DriveTrain: [TorqueDrivenEngine, GearAttachment, HolonomicGearConnector]
+
+LowLevelTorqueMotor:
+  .extends: TorqueDrivenEngine
+  .doc: > 
+    A motor with two gains, which takes the input torque
+    and does a inner torque control loop, using the previous torque.
+    The torque applied to the motor T_m is computed from:
+    T_m = T_d + K_T * (T_d - T_o) + K_S * T_dot
+    Where T_d is the desired torque from the controller,
+    T_o is the last (time step) measured torque, and T_dot is
+    the measured torque time derivative computed from the two last
+    measurements.
+    The model is presented in the thesis of Wouter Weekers -
+    Validation of Nonsmooth Impact Maps in Robot Impact Experiments
+
+  K_T:
+    .doc: Motor gain
+    .type: Real
+    .value: 0.3
+
+  K_S:
+    .doc: Motor gain 
+    .type: Real
+    .value: 0.003
+
+  gearReference:
+    .doc: Point to the gear that should be used for torque measurement
+    .type: HolonomicGearConnector
+
+  minTorque:
+    .type: Real
+    .value: -.inf
+    .doc: >
+          the smallest possible torque this motor can produce. 
+          If not set, it is considered negative infinity.
+
+  maxTorque:
+    .type: Real
+    .value: .inf
+    .doc: >
+          the largest possible torque this motor can produce.
+          If not set, it is considered infinity.
