@@ -25,6 +25,8 @@ namespace AGXUnityEditor
       var content = new GUIContent();
       content.text = field.Name.SplitCamelCase() + postText;
       content.tooltip = field.GetCustomAttribute<DescriptionAttribute>( false )?.Description;
+      if(content.tooltip == null)
+        content.tooltip = field.GetCustomAttribute<TooltipAttribute>( false )?.tooltip;
 
       return content;
     }
@@ -34,7 +36,7 @@ namespace AGXUnityEditor
       get
       {
 #if UNITY_2019_3_OR_NEWER
-        return 22.0f;
+        return 20.0f;
 #else
         return 14.0f;
 #endif
@@ -420,17 +422,17 @@ namespace AGXUnityEditor
 
         position.x += EditorGUIUtility.labelWidth - IndentScope.PixelLevel;
         position.xMax -= EditorGUIUtility.labelWidth +
-                         Convert.ToInt32( supportsCreateAsset ) * createNewButtonWidth -
+                         Convert.ToInt32( supportsCreateAsset ) * (createNewButtonWidth + 2) -
                          IndentScope.PixelLevel;
         result = EditorGUI.ObjectField( position, instance, instanceType, allowSceneObject );
         if ( supportsCreateAsset ) {
           var buttonRect = new Rect( position.xMax + 2, position.y, createNewButtonWidth, EditorGUIUtility.singleLineHeight );
-          buttonRect.xMax = buttonRect.x + createNewButtonWidth - 2;
 
           createNewPressed = Button( buttonRect,
                                      MiscIcon.CreateAsset,
                                      UnityEngine.GUI.enabled,
-                                     "Create new asset." );
+                                     "Create new asset.",
+                                     0.9f );
         }
       }
       else
@@ -645,6 +647,39 @@ namespace AGXUnityEditor
       return currentEntry;
     }
 
+    public static T ToggleEnum<T>( GUIContent label,
+                                   bool enabled,
+                                   Action<bool> enabledResult,
+                                   T currentEntry) 
+      where T : Enum
+    {
+      var toggleWidth   = 18.0f;
+      var controlRect   = EditorGUILayout.GetControlRect();
+      var totalWidth    = controlRect.width;
+      controlRect.width = EditorGUIUtility.labelWidth;
+
+      EditorGUI.PrefixLabel( controlRect, label );
+
+      var indentOffset = IndentScope.PixelLevel - 2;
+
+      controlRect.x += EditorGUIUtility.labelWidth - indentOffset;
+      controlRect.width = toggleWidth;
+      enabled = EditorGUI.Toggle( controlRect,
+                                  enabled );
+      enabledResult( enabled );
+      using ( new GUI.EnabledBlock( enabled ) ) {
+        controlRect.x += toggleWidth;
+        controlRect.width = totalWidth -
+                            EditorGUIUtility.labelWidth -
+                            toggleWidth +
+                            indentOffset;
+        currentEntry = (T)EditorGUI.EnumPopup( controlRect,
+                                               currentEntry);
+      }
+
+      return currentEntry;
+    }
+
     public struct ToolButtonData
     {
       public static ToolButtonData Create( ToolIcon icon,
@@ -716,7 +751,7 @@ namespace AGXUnityEditor
 
       if ( texture != null ) {
         using ( IconManager.ForegroundColorBlock( data.IsActive, data.Enabled ) )
-          UnityEngine.GUI.DrawTexture( IconManager.GetIconRect( rect ), texture );
+          UnityEngine.GUI.DrawTexture( IconManager.GetIconRect( rect, 0.8f ), texture );
       }
 
       data.PostRender?.Invoke();
