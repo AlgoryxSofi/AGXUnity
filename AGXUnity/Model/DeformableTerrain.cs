@@ -6,10 +6,11 @@ using UnityEngine;
 using GUI = AGXUnity.Utils.GUI;
 
 namespace AGXUnity.Model
-{ 
+{
   [AddComponentMenu( "AGXUnity/Model/Deformable Terrain" )]
   [RequireComponent( typeof( Terrain ) )]
   [DisallowMultipleComponent]
+  [HelpURL( "https://us.download.algoryx.se/AGXUnity/documentation/current/editor_interface.html#deformable-terrain" )]
   public class DeformableTerrain : DeformableTerrainBase
   {
     /// <summary>
@@ -76,14 +77,12 @@ namespace AGXUnity.Model
     /// </summary>
     public void ResetHeights()
     {
-      if ( Native != null && Simulation.HasInstance ) {
-        GetSimulation().remove( Native );
-        Native = null;
-      }
-
       ResetTerrainDataHeightsAndTransform();
 
-      InitializeNative();
+      var nativeHeightData = TerrainUtils.WriteTerrainDataOffset( Terrain, MaximumDepth );
+      transform.position = transform.position + MaximumDepth * Vector3.down;
+
+      Native.setHeights( nativeHeightData.Heights );
 
       PropertySynchronizer.Synchronize( this );
     }
@@ -104,7 +103,7 @@ namespace AGXUnity.Model
       // Only printing the errors if something is wrong.
       LicenseManager.LicenseInfo.HasModuleLogError( LicenseInfo.Module.AGXTerrain | LicenseInfo.Module.AGXGranular, this );
 
-      RemoveInvalidShovels();
+      RemoveInvalidShovels( true, true );
 
       m_initialHeights = TerrainData.GetHeights( 0, 0, TerrainDataResolution, TerrainDataResolution );
 
@@ -155,6 +154,7 @@ namespace AGXUnity.Model
                                        0.0f );
 
       Native.setTransform( Utils.TerrainUtils.CalculateNativeOffset( transform, TerrainData ) );
+
 
       foreach ( var shovel in Shovels )
         Native.add( shovel.GetInitialized<DeformableTerrainShovel>()?.Native );
@@ -293,19 +293,103 @@ namespace AGXUnity.Model
       return m_shovels.Remove( shovel );
     }
 
-    public override bool Contains( DeformableTerrainShovel shovel ) 
-    { 
+    public override bool Contains( DeformableTerrainShovel shovel )
+    {
       return shovel != null && m_shovels.Contains( shovel );
     }
 
-    public override void RemoveInvalidShovels()
+    public override void RemoveInvalidShovels( bool removeDisabled = false, bool warn = false )
     {
       m_shovels.RemoveAll( shovel => shovel == null );
+      if ( removeDisabled ) {
+        int removed = m_shovels.RemoveAll( shovel => !shovel.isActiveAndEnabled );
+        if ( removed > 0 ) {
+          if ( warn )
+            Debug.LogWarning( $"Removed {removed} disabled shovels from terrain {gameObject.name}." +
+                              " Disabled shovels should not be added to the terrain on play and should instead be added manually when enabled during runtime." +
+                              " To fix this warning, please remove any disabled shovels from the terrain." );
+          else
+            Debug.Log( $"Removed {removed} disabled shovels from terrain {gameObject.name}." );
+        }
+      }
     }
     public override void ConvertToDynamicMassInShape( Shape failureVolume )
     {
       if ( !IsNativeNull() )
         Native.convertToDynamicMassInShape( failureVolume.GetInitialized<Shape>().NativeShape );
+    }
+
+    public override void SetHeights( int xstart, int ystart, float[,] heights )
+    {
+      int height = heights.GetLength(0);
+      int width = heights.GetLength(1);
+      int resolution = TerrainDataResolution;
+
+      if ( xstart + width >= resolution || xstart < 0 || ystart + height >= resolution || ystart < 0 )
+        throw new ArgumentOutOfRangeException( "", $"Provided height patch with start ({xstart},{ystart}) and size ({width},{height}) extends outside of the terrain bounds [0,{TerrainDataResolution - 1}]" );
+
+      float scale = TerrainData.size.y;
+      float depthOffset = 0;
+      if ( Native != null )
+        depthOffset = MaximumDepth;
+
+      for ( int y = 0; y < height; y++ ) {
+        for ( int x = 0; x < width; x++ ) {
+          float value = heights[ y, x ] + depthOffset;
+          heights[ y, x ] = value / scale;
+
+          agx.Vec2i idx = new agx.Vec2i( resolution - 1 - x - xstart, resolution - 1 - y - ystart);
+          Native?.setHeight( idx, value );
+        }
+      }
+
+      TerrainData.SetHeights( xstart, ystart, heights );
+    }
+    public override void SetHeight( int x, int y, float height )
+    {
+      if ( x >= TerrainDataResolution || x < 0 || y >= TerrainDataResolution || y < 0 )
+        throw new ArgumentOutOfRangeException( "(x, y)", $"Indices ({x},{y}) is outside of the terrain bounds [0,{TerrainDataResolution - 1}]" );
+
+      if ( Native != null )
+        height += MaximumDepth;
+
+      agx.Vec2i idx = new agx.Vec2i( TerrainDataResolution - 1 - x, TerrainDataResolution - 1 - y );
+      Native?.setHeight( idx, height );
+
+      TerrainData.SetHeights( x, y, new float[,] { { height / TerrainData.size.y } } );
+    }
+    public override float[,] GetHeights( int xstart, int ystart, int width, int height )
+    {
+      if ( width <= 0 || height <= 0 )
+        throw new ArgumentOutOfRangeException( "width, height", $"Width and height ({width} / {height}) must be greater than 0" );
+
+      int resolution = TerrainDataResolution;
+
+      if ( xstart + width >= resolution || xstart < 0 || ystart + height >= resolution || ystart < 0 )
+        throw new ArgumentOutOfRangeException( "", $"Requested height patch with start ({xstart},{ystart}) and size ({width},{height}) extends outside of the terrain bounds [0,{TerrainDataResolution - 1}]" );
+
+      if ( Native == null )
+        return TerrainData.GetHeights( xstart, ystart, width, height );
+
+      float [,] heights = new float[height,width];
+      for ( int y = 0; y < height; y++ ) {
+        for ( int x = 0; x < width; x++ ) {
+          agx.Vec2i idx = new agx.Vec2i( resolution - 1 - x - xstart, resolution - 1 - y - ystart);
+          heights[ y, x ] = (float)Native.getHeight( idx ) - MaximumDepth;
+        }
+      }
+      return heights;
+    }
+    public override float GetHeight( int x, int y )
+    {
+      if ( x >= TerrainDataResolution || x < 0 || y >= TerrainDataResolution || y < 0 )
+        throw new ArgumentOutOfRangeException( "(x, y)", $"Indices ({x},{y}) is outside of the terrain bounds [0,{TerrainDataResolution - 1}]" );
+
+      if ( Native == null )
+        return TerrainData.GetHeight( x, y );
+
+      agx.Vec2i idx = new agx.Vec2i( TerrainDataResolution - 1 - x, TerrainDataResolution - 1 - y );
+      return (float)Native.getHeight( idx ) - MaximumDepth;
     }
 
     protected override bool IsNativeNull() { return Native == null; }
