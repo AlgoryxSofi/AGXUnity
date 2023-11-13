@@ -302,7 +302,8 @@ namespace AGXUnityEditor.BrickUnity
       {
         throw new AGXUnity.Exception($"Got an external reference ({b_body.ExternalReference}) but no external component is present.");
       }
-      bodyDict.Add(b_body, go);
+      if (!bodyDict.ContainsKey(b_body))
+        bodyDict.Add(b_body, go);
     }
 
 
